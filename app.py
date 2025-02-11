@@ -34,15 +34,14 @@ monitoring = st.sidebar.toggle("Enable Real-Time Monitoring", value=True)
 
 st.sidebar.subheader("🚘 Vehicle Response Settings")
 levels = ['Low', 'Moderate', 'High', 'Critical']
-actions = {
-    "Basic": ["No Action", "Send Notification"],
-    "Comfort": ["Reduce Speed", "Play Calming Music", "Turn On Air Conditioning", "Adjust Seat Position"],
-    "Emergency": ["Activate Horn", "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"]
-}
+actions = [
+    "No Action", "Send Notification", "Reduce Speed", "Play Calming Music", "Turn On Air Conditioning", 
+    "Adjust Seat Position", "Activate Horn", "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
+]
 
-stress_actions = {level: st.sidebar.multiselect(f"Stress - {level}", sum(actions.values(), []), default=["Send Notification"]) for level in levels}
-fatigue_actions = {level: st.sidebar.multiselect(f"Fatigue - {level}", sum(actions.values(), []), default=["Send Notification"]) for level in levels}
-health_crisis_actions = {level: st.sidebar.multiselect(f"Health Crisis - {level}", sum(actions.values(), []), default=["Send Notification"]) for level in levels}
+stress_actions = {level: {action: st.sidebar.checkbox(f"{action} - Stress {level}", value=(action == "Send Notification")) for action in actions} for level in levels}
+fatigue_actions = {level: {action: st.sidebar.checkbox(f"{action} - Fatigue {level}", value=(action == "Send Notification")) for action in actions} for level in levels}
+health_crisis_actions = {level: {action: st.sidebar.checkbox(f"{action} - Health Crisis {level}", value=(action == "Send Notification")) for action in actions} for level in levels}
 
 # Dynamic Data Display
 col1, col2 = st.columns(2)
@@ -62,12 +61,16 @@ if monitoring:
         alerts = []
 
         for level in levels:
+            selected_fatigue_actions = [action for action, selected in fatigue_actions[level].items() if selected]
+            selected_stress_actions = [action for action, selected in stress_actions[level].items() if selected]
+            selected_health_actions = [action for action, selected in health_crisis_actions[level].items() if selected]
+            
             if fake_data['Fatigue Risk'] == level:
-                alerts.append(f"⚠️ Fatigue Risk {level}: {', '.join(fatigue_actions[level])}")
+                alerts.append(f"⚠️ Fatigue Risk {level}: {', '.join(selected_fatigue_actions)}")
             if fake_data['Stress Level'] == level:
-                alerts.append(f"💆‍♂️ Stress Level {level}: {', '.join(stress_actions[level])}")
+                alerts.append(f"💆‍♂️ Stress Level {level}: {', '.join(selected_stress_actions)}")
             if fake_data['Health Crisis Risk'] == level:
-                alerts.append(f"🚑 Health Crisis {level}: {', '.join(health_crisis_actions[level])}")
+                alerts.append(f"🚑 Health Crisis {level}: {', '.join(selected_health_actions)}")
 
         alert_placeholder.warning("\n".join(alerts) if alerts else "✅ No critical alerts detected.")
         time.sleep(3)
