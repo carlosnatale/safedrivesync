@@ -23,8 +23,8 @@ def generate_fake_data():
         'HRV (ms)': np.random.randint(20, 80),
         'SpO2 (%)': np.random.randint(90, 100),
         'Motion Intensity': np.random.randint(0, 10),
-        'Stress Level': np.random.choice(['Low', 'Moderate', 'High']),
-        'Fatigue Risk': np.random.choice(['Low', 'Moderate', 'High'], p=[0.6, 0.3, 0.1]),
+        'Stress Level': np.random.choice(['Low', 'Moderate', 'High', 'Critical']),
+        'Fatigue Risk': np.random.choice(['Low', 'Moderate', 'High', 'Critical'], p=[0.5, 0.3, 0.15, 0.05]),
         'Health Crisis Risk': np.random.choice(['Normal', 'Warning', 'Critical'], p=[0.7, 0.2, 0.1])
     }
 
@@ -33,9 +33,12 @@ st.sidebar.header("⚙️ Settings")
 monitoring = st.sidebar.toggle("Enable Real-Time Monitoring", value=True)
 
 st.sidebar.subheader("🚘 Vehicle Response Settings")
-disable_notifications_fatigue = st.sidebar.toggle("Disable Fatigue Notifications", value=False)
-disable_notifications_stress = st.sidebar.toggle("Disable Stress Notifications", value=False)
-disable_notifications_health = st.sidebar.toggle("Disable Health Crisis Notifications", value=False)
+levels = ['Low', 'Moderate', 'High', 'Critical']
+actions = ["No Action", "Send Notification", "Reduce Speed", "Play Calming Music", "Turn On Air Conditioning", "Adjust Seat Position", "Activate Horn", "Call Emergency Services", "Activate Autopilot"]
+
+stress_actions = {level: st.sidebar.multiselect(f"Stress - {level}", actions, default=["Send Notification"]) for level in levels}
+fatigue_actions = {level: st.sidebar.multiselect(f"Fatigue - {level}", actions, default=["Send Notification"]) for level in levels}
+health_crisis_actions = {level: st.sidebar.multiselect(f"Health Crisis - {level}", actions, default=["Send Notification"]) for level in levels}
 
 # Dynamic Data Display
 col1, col2 = st.columns(2)
@@ -54,23 +57,13 @@ if monitoring:
         data_placeholder.dataframe(df, use_container_width=True)
         alerts = []
 
-        if not disable_notifications_fatigue:
-            if fake_data['Fatigue Risk'] == 'High':
-                alerts.append("🚨 High Fatigue Risk! Take a break immediately.")
-            elif fake_data['Fatigue Risk'] == 'Moderate':
-                alerts.append("⚠️ Moderate Fatigue Detected. Consider resting soon.")
-        
-        if not disable_notifications_health:
-            if fake_data['Health Crisis Risk'] == 'Critical':
-                alerts.append("🚑 Critical Health Warning! Emergency services alerted.")
-            elif fake_data['Health Crisis Risk'] == 'Warning':
-                alerts.append("⚠️ Health anomaly detected. Monitor closely.")
-
-        if not disable_notifications_stress:
-            if fake_data['Stress Level'] == 'High':
-                alerts.append("💆‍♂️ High Stress Level Detected. Consider relaxation measures.")
-            elif fake_data['Stress Level'] == 'Moderate':
-                alerts.append("🧘 Moderate Stress Detected. Take calming measures.")
+        for level in levels:
+            if fake_data['Fatigue Risk'] == level:
+                alerts.append(f"⚠️ Fatigue Risk {level}: {', '.join(fatigue_actions[level])}")
+            if fake_data['Stress Level'] == level:
+                alerts.append(f"💆‍♂️ Stress Level {level}: {', '.join(stress_actions[level])}")
+            if fake_data['Health Crisis Risk'] == level:
+                alerts.append(f"🚑 Health Crisis {level}: {', '.join(health_crisis_actions[level])}")
 
         alert_placeholder.warning("\n".join(alerts) if alerts else "✅ No critical alerts detected.")
         time.sleep(3)
