@@ -73,6 +73,7 @@ if monitoring:
         df = pd.DataFrame([fake_data])
         data_placeholder.dataframe(df, use_container_width=True)
         alerts = []
+        status_data = []
 
         for level in levels:
             selected_fatigue_actions = ", ".join(fatigue_actions[level])
@@ -81,12 +82,21 @@ if monitoring:
             
             if fake_data['Fatigue Risk'] == level:
                 alerts.append(f"⚠️ Fatigue Risk {level}: {selected_fatigue_actions}")
+                status_data.append(["Fatigue", f"Fatigue Risk {level}", selected_fatigue_actions])
             if fake_data['Stress Level'] == level:
                 alerts.append(f"💆‍♂️ Stress Level {level}: {selected_stress_actions}")
+                status_data.append(["Stress", f"Stress Level {level}", selected_stress_actions])
             if fake_data['Health Crisis Risk'] == level:
                 alerts.append(f"🚑 Health Crisis {level}: {selected_health_actions}")
+                status_data.append(["Health Crisis", f"Health Crisis {level}", selected_health_actions])
 
         alert_placeholder.warning("\n".join(alerts) if alerts else "✅ No critical alerts detected.")
+
+        # Display Status Summary Table
+        st.subheader("📋 Driver Status Summary")
+        status_df = pd.DataFrame(status_data, columns=["Current Driver Status", "Alert System", "Vehicle Actions"])
+        st.table(status_df)
+        
         time.sleep(3)
 else:
     st.write("Monitoring is disabled. Enable it from the sidebar.")
@@ -112,4 +122,4 @@ if st.button("📉 Generate Trip Summary", use_container_width=True):
         st.success("✅ No fatigue events detected. Safe driving!")
     
     if summary_data['Health Alerts Triggered'] > 0:
-        st.warning("⚠️ Health alerts were triggered during the trip. Review details.") 
+        st.warning("⚠️ Health alerts were triggered during the trip. Review details.")
