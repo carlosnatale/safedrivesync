@@ -112,4 +112,4 @@ if st.button("📉 Generate Trip Summary", use_container_width=True):
         st.success("✅ No fatigue events detected. Safe driving!")
     
     if summary_data['Health Alerts Triggered'] > 0:
-        st.warning("⚠️ Health alerts were triggered during the trip. Review details.")
+        st.warning("⚠️ Health alerts were triggered during the trip. Review details.") 
