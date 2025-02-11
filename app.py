@@ -3,19 +3,21 @@ import pandas as pd
 import numpy as np
 import time
 
-# Streamlit UI Enhancements - Tesla-Style UI
+# Streamlit UI Enhancements - Classic Dashboard Look
 st.set_page_config(page_title="SafeDrive Sync", layout="wide")
 
-# Custom CSS for Tesla-style UI
+# Custom CSS for Classic Dashboard Look
 st.markdown("""
     <style>
-        .main { background-color: #1e1e1e; color: white; }
+        .main { background-color: #f8f9fa; color: black; }
         .stAlert { font-size: 16px; }
-        .stButton>button { border-radius: 10px; padding: 12px; background: #222; color: white; border: 1px solid white; }
-        .stDataFrame { background-color: black; color: white; border-radius: 10px; padding: 10px; }
-        .stSidebar { background: #181818; }
+        .stButton>button { border-radius: 8px; padding: 10px; background: #007bff; color: white; border: none; }
+        .stDataFrame { background-color: white; color: black; border-radius: 10px; padding: 10px; }
+        .stSidebar { background: #e9ecef; }
         .dashboard-container { display: flex; justify-content: space-around; text-align: center; }
-        .dashboard-section { padding: 20px; border-radius: 10px; background: #2a2a2a; margin: 10px; }
+        .dashboard-section { padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 1px solid #ced4da; }
+        .checkbox-grid { display: flex; flex-wrap: wrap; justify-content: space-between; }
+        .checkbox-item { width: 48%; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -31,11 +33,11 @@ def generate_fake_data():
         'Health Crisis Risk': np.random.choice(['Normal', 'Warning', 'Critical'], p=[0.7, 0.2, 0.1])
     }
 
-st.title("🚗 SafeDrive Sync - Tesla-Style UI")
+st.title("🚗 SafeDrive Sync - Classic Dashboard UI")
 
 monitoring = st.toggle("Enable Real-Time Monitoring", value=True)
 
-# Vehicle Response Settings in Grid-Style Layout
+# Vehicle Response Settings in a Classic Dashboard Layout
 st.subheader("🚘 Vehicle Response Settings")
 levels = ['Low', 'Moderate', 'High', 'Critical']
 actions = [
@@ -44,18 +46,23 @@ actions = [
 ]
 
 def action_checkboxes(label, actions):
-    return {action: st.checkbox(f"{label}: {action}", value=(action == "Send Notification")) for action in actions}
+    return {action: st.checkbox(f"{label}: {action}", value=(action == "Send Notification"), key=f"{label}-{action}") for action in actions}
 
-st.subheader("🧘 Stress Actions")
-stress_actions = {level: action_checkboxes(f"Stress {level}", actions) for level in levels}
+col1, col2, col3 = st.columns(3)
 
-st.subheader("😴 Fatigue Actions")
-fatigue_actions = {level: action_checkboxes(f"Fatigue {level}", actions) for level in levels}
+with col1:
+    st.subheader("🧘 Stress Actions")
+    stress_actions = {level: action_checkboxes(f"Stress {level}", actions) for level in levels}
 
-st.subheader("🚑 Health Crisis Actions")
-health_crisis_actions = {level: action_checkboxes(f"Health Crisis {level}", actions) for level in levels}
+with col2:
+    st.subheader("😴 Fatigue Actions")
+    fatigue_actions = {level: action_checkboxes(f"Fatigue {level}", actions) for level in levels}
 
-# Real-Time Data Display - Tesla-Style Grid
+with col3:
+    st.subheader("🚑 Health Crisis Actions")
+    health_crisis_actions = {level: action_checkboxes(f"Health Crisis {level}", actions) for level in levels}
+
+# Real-Time Data Display - Classic Dashboard Look
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
 
