@@ -16,7 +16,6 @@ st.markdown("""
         .stSidebar { background: #e9ecef; }
         .dashboard-container { display: flex; justify-content: space-between; padding: 10px; gap: 20px; }
         .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 2px solid #ced4da; text-align: left; }
-        .monitoring-box { padding: 20px; border-radius: 10px; background: #e3fcef; border: 3px solid #28a745; text-align: left; font-size: 18px; }
         .action-box { padding: 20px; border-radius: 10px; background: #d1ecf1; border: 3px solid #004085; text-align: left; font-size: 18px; }
         .notification-box { padding: 20px; border-radius: 10px; background: #f8d7da; border: 3px solid #dc3545; text-align: left; font-size: 18px; }
         .alert-title { font-weight: bold; font-size: 22px; margin-bottom: 15px; text-align: center; }
@@ -95,7 +94,6 @@ with col3:
 # Real-Time Data Display - Classic Dashboard Look
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
-alert_placeholder = st.empty()
 action_placeholder = st.empty()
 notification_placeholder = st.empty()
 
@@ -104,23 +102,21 @@ if monitoring:
         fake_data = generate_fake_data()
         df = pd.DataFrame([fake_data])
         data_placeholder.dataframe(df, use_container_width=True)
-        monitoring_alerts, actions_taken, notifications = [], [], []
+        actions_taken, notifications = [], []
 
-        for category, risk_key in zip(
+        for category, risk_key, action_dict in zip(
             ["Stress", "Fatigue", "Health Crisis"],
-            ["Stress Level", "Fatigue Risk", "Health Crisis Risk"]
+            ["Stress Level", "Fatigue Risk", "Health Crisis Risk"],
+            [stress_actions, fatigue_actions, health_crisis_actions]
         ):
             current_level = fake_data[risk_key]
-            monitoring_alerts.append(f"⚠️ {category} Level: {current_level}")
-            notifications.append(generate_notification(category, current_level))
-
-        alert_placeholder.markdown(
-            f"""
-            <div class='dashboard-box monitoring-box'>
-                <div class='alert-title'>📡 Driver Monitoring</div>
-                {''.join(monitoring_alerts)}
-            </div>
-            """, unsafe_allow_html=True)
+            selected_actions = action_dict.get(current_level, [])
+            
+            for action in selected_actions:
+                if action == "Send Notification":
+                    notifications.append(generate_notification(category, current_level))
+                else:
+                    actions_taken.append(f"🚗 {action} activated due to {category} ({current_level})")
 
         action_placeholder.markdown(
             f"""
