@@ -20,6 +20,7 @@ st.markdown("""
         .action-box { padding: 15px; border-radius: 10px; background: #cce5ff; border: 1px solid #004085; text-align: left; }
         .alert-title { font-weight: bold; font-size: 18px; margin-bottom: 10px; text-align: center; }
         .alert-content { font-size: 16px; padding: 5px 10px; }
+        .critical-alert { background: #f8d7da; border: 1px solid #dc3545; color: #721c24; padding: 10px; border-radius: 5px; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -92,9 +93,11 @@ if monitoring:
             [stress_actions, fatigue_actions, health_crisis_actions]
         ):
             current_level = fake_data[risk_key]
-            alert_message = f"{category} Level: {current_level}" if current_level != "Low" else "Normal Condition"
+            icon = "⚠️" if current_level in ["High", "Critical"] else "✅"
+            alert_class = "critical-alert" if current_level == "Critical" else "alert-content"
+            alert_message = f"{icon} {category} Level: {current_level}" if current_level != "Low" else "Normal Condition"
             selected_actions = "<br>".join(action_dict.get(current_level, ["No Action Required"]))
-            alerts.append(f"<div class='alert-content'><strong>{category}:</strong> {alert_message}</div>")
+            alerts.append(f"<div class='{alert_class}'><strong>{category}:</strong> {alert_message}</div>")
             actions_taken.append(f"<div class='alert-content'><strong>{category}:</strong> {selected_actions}</div>")
         
         alert_placeholder.markdown(f"""
