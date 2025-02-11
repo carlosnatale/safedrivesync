@@ -87,7 +87,7 @@ if monitoring:
         ):
             current_level = fake_data[risk_key]
             alert_message = f"{category} Level: {current_level}" if current_level != "Low" else "Normal Condition"
-            selected_actions = ", ".join(action_dict[current_level]) if current_level != "Low" else "No Action Required"
+            selected_actions = ", ".join(action_dict.get(current_level, ["No Action Required"]))
             alerts.append(f"{category} {current_level}: {selected_actions}")
         
         alert_placeholder.warning("\n".join(alerts) if alerts else "✅ No critical alerts detected.")
