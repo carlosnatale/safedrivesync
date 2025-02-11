@@ -48,8 +48,6 @@ def generate_notification(category, level):
 # Simulate real-time biometric data generation
 def generate_fake_data():
     levels = ['Low', 'Moderate', 'High', 'Critical']
-    
-    # Ensuring the probability array matches the number of levels
     health_crisis_probs = np.array([0.57, 0.23, 0.1, 0.1])
     health_crisis_probs /= health_crisis_probs.sum()  # Normalize to ensure exact sum of 1.0
 
@@ -62,7 +60,7 @@ def generate_fake_data():
         'Motion Intensity': np.random.randint(0, 10),
         'Stress Level': np.random.choice(levels),
         'Fatigue Risk': np.random.choice(levels, p=[0.5, 0.3, 0.15, 0.05]),
-        'Health Crisis Risk': np.random.choice(levels, p=health_crisis_probs)  # Ensures matching array sizes
+        'Health Crisis Risk': np.random.choice(levels, p=health_crisis_probs)
     }
 
 st.title("🚗 SafeDrive Sync - Classic Dashboard UI")
@@ -94,37 +92,35 @@ with col3:
     st.subheader("🚑 Health Crisis Actions")
     health_crisis_actions = {level: action_multiselect(f"Health Crisis {level}", actions) for level in levels}
 
-# Real-Time Data Display - Classic Dashboard Look
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
-
 st.subheader("🚦 Alert System")
 alert_placeholder = st.empty()
 action_placeholder = st.empty()
 notification_placeholder = st.empty()
 
 if monitoring:
-    fake_data = generate_fake_data()
-    df = pd.DataFrame([fake_data])
-    data_placeholder.dataframe(df, use_container_width=True)
-    alerts = []
-    actions_taken = []
-    notifications = []
+    while True:
+        fake_data = generate_fake_data()
+        df = pd.DataFrame([fake_data])
+        data_placeholder.dataframe(df, use_container_width=True)
+        alerts, actions_taken, notifications = [], [], []
 
-    for category, risk_key, action_dict in zip(
-        ["Stress", "Fatigue", "Health Crisis"],
-        ["Stress Level", "Fatigue Risk", "Health Crisis Risk"],
-        [stress_actions, fatigue_actions, health_crisis_actions]
-    ):
-        current_level = fake_data[risk_key]
-        alert_message = f"⚠️ {category} Level: {current_level}" if current_level != "Low" else "✅ Normal Condition"
-        selected_actions = "<br>".join(action_dict.get(current_level, ["No Action Required"]))
-        alerts.append(f"<div class='alert-content'>{alert_message}</div>")
-        actions_taken.append(f"<div class='alert-content'><strong>{category}:</strong> {selected_actions}</div>")
-        
-        if "Send Notification" in action_dict.get(current_level, []):
-            notifications.append(f"<div class='alert-content'>{generate_notification(category, current_level)}</div>")
-    
-    alert_placeholder.markdown("\n".join(alerts), unsafe_allow_html=True)
-    action_placeholder.markdown("\n".join(actions_taken), unsafe_allow_html=True)
-    notification_placeholder.markdown("\n".join(notifications) if notifications else "✅ No notifications sent.", unsafe_allow_html=True)
+        for category, risk_key, action_dict in zip(
+            ["Stress", "Fatigue", "Health Crisis"],
+            ["Stress Level", "Fatigue Risk", "Health Crisis Risk"],
+            [stress_actions, fatigue_actions, health_crisis_actions]
+        ):
+            current_level = fake_data[risk_key]
+            alert_message = f"⚠️ {category} Level: {current_level}" if current_level != "Low" else "✅ Normal Condition"
+            selected_actions = "<br>".join(action_dict.get(current_level, ["No Action Required"]))
+            alerts.append(alert_message)
+            actions_taken.append(f"{category}: {selected_actions}")
+            
+            if "Send Notification" in action_dict.get(current_level, []):
+                notifications.append(generate_notification(category, current_level))
+
+        alert_placeholder.markdown("\n".join(alerts) if alerts else "✅ No alerts.")
+        action_placeholder.markdown("\n".join(actions_taken) if actions_taken else "✅ No actions taken.")
+        notification_placeholder.markdown("\n".join(notifications) if notifications else "✅ No notifications sent.")
+        time.sleep(3)
