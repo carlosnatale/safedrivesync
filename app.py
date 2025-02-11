@@ -14,13 +14,13 @@ st.markdown("""
         .stButton>button { border-radius: 8px; padding: 10px; background: #007bff; color: white; border: none; }
         .stDataFrame { background-color: white; color: black; border-radius: 10px; padding: 10px; }
         .stSidebar { background: #e9ecef; }
-        .dashboard-container { display: flex; justify-content: space-between; padding: 10px; }
-        .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 1px solid #ced4da; text-align: left; }
-        .alert-box { padding: 15px; border-radius: 10px; background: #fff3cd; border: 2px solid #ff851b; text-align: left; }
-        .action-box { padding: 15px; border-radius: 10px; background: #d1ecf1; border: 2px solid #004085; text-align: left; }
-        .alert-title { font-weight: bold; font-size: 20px; margin-bottom: 10px; text-align: center; }
-        .alert-content { font-size: 18px; padding: 10px 15px; }
-        .critical-alert { background: #f8d7da; border: 2px solid #dc3545; color: #721c24; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 20px; text-align: center; }
+        .dashboard-container { display: flex; justify-content: space-between; padding: 10px; gap: 20px; }
+        .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 2px solid #ced4da; text-align: left; }
+        .alert-box { padding: 20px; border-radius: 10px; background: #ffeeba; border: 3px solid #ff851b; text-align: left; font-size: 18px; }
+        .action-box { padding: 20px; border-radius: 10px; background: #d1ecf1; border: 3px solid #004085; text-align: left; font-size: 18px; }
+        .alert-title { font-weight: bold; font-size: 22px; margin-bottom: 15px; text-align: center; }
+        .alert-content { font-size: 20px; padding: 10px 15px; }
+        .critical-alert { background: #f8d7da; border: 3px solid #dc3545; color: #721c24; padding: 20px; border-radius: 10px; font-weight: bold; font-size: 22px; text-align: center; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -95,7 +95,7 @@ if monitoring:
             current_level = fake_data[risk_key]
             icon = "⚠️" if current_level in ["High", "Critical"] else "✅"
             alert_class = "critical-alert" if current_level == "Critical" else "alert-content"
-            alert_message = f"{icon} {category} Level: {current_level}" if current_level != "Low" else "Normal Condition"
+            alert_message = f"{icon} {category} Level: {current_level}" if current_level != "Low" else "✅ Normal Condition"
             selected_actions = "<br>".join(action_dict.get(current_level, ["No Action Required"]))
             alerts.append(f"<div class='{alert_class}'>{alert_message}</div>")
             actions_taken.append(f"<div class='alert-content'><strong>{category}:</strong> {selected_actions}</div>")
