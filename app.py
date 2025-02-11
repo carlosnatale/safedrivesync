@@ -3,16 +3,19 @@ import pandas as pd
 import numpy as np
 import time
 
-# Streamlit UI Enhancements
+# Streamlit UI Enhancements - Tesla-Style UI
 st.set_page_config(page_title="SafeDrive Sync", layout="wide")
 
-# Custom CSS to improve UI
+# Custom CSS for Tesla-style UI
 st.markdown("""
     <style>
-        .main { background-color: #f4f4f4; }
+        .main { background-color: #1e1e1e; color: white; }
         .stAlert { font-size: 16px; }
-        .stButton>button { border-radius: 10px; padding: 10px; }
-        .stDataFrame { background-color: white; border-radius: 10px; padding: 10px; }
+        .stButton>button { border-radius: 10px; padding: 12px; background: #222; color: white; border: 1px solid white; }
+        .stDataFrame { background-color: black; color: white; border-radius: 10px; padding: 10px; }
+        .stSidebar { background: #181818; }
+        .dashboard-container { display: flex; justify-content: space-around; text-align: center; }
+        .dashboard-section { padding: 20px; border-radius: 10px; background: #2a2a2a; margin: 10px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -28,30 +31,36 @@ def generate_fake_data():
         'Health Crisis Risk': np.random.choice(['Normal', 'Warning', 'Critical'], p=[0.7, 0.2, 0.1])
     }
 
-st.title("🚗 SafeDrive Sync - Driver Safety & Health Monitor")
-st.sidebar.header("⚙️ Settings")
-monitoring = st.sidebar.toggle("Enable Real-Time Monitoring", value=True)
+st.title("🚗 SafeDrive Sync - Tesla-Style UI")
 
-st.sidebar.subheader("🚘 Vehicle Response Settings")
+monitoring = st.toggle("Enable Real-Time Monitoring", value=True)
+
+# Vehicle Response Settings in Grid-Style Layout
+st.subheader("🚘 Vehicle Response Settings")
 levels = ['Low', 'Moderate', 'High', 'Critical']
 actions = [
     "No Action", "Send Notification", "Reduce Speed", "Play Calming Music", "Turn On Air Conditioning", 
     "Adjust Seat Position", "Activate Horn", "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
 ]
 
-stress_actions = {level: {action: st.sidebar.checkbox(f"{action} - Stress {level}", value=(action == "Send Notification")) for action in actions} for level in levels}
-fatigue_actions = {level: {action: st.sidebar.checkbox(f"{action} - Fatigue {level}", value=(action == "Send Notification")) for action in actions} for level in levels}
-health_crisis_actions = {level: {action: st.sidebar.checkbox(f"{action} - Health Crisis {level}", value=(action == "Send Notification")) for action in actions} for level in levels}
+def action_checkboxes(label, actions):
+    return {action: st.checkbox(f"{label}: {action}", value=(action == "Send Notification")) for action in actions}
 
-# Dynamic Data Display
-col1, col2 = st.columns(2)
-with col1:
-    st.subheader("📊 Real-Time Driver Health Data")
-    data_placeholder = st.empty()
+st.subheader("🧘 Stress Actions")
+stress_actions = {level: action_checkboxes(f"Stress {level}", actions) for level in levels}
 
-with col2:
-    st.subheader("🚦 Alert System")
-    alert_placeholder = st.empty()
+st.subheader("😴 Fatigue Actions")
+fatigue_actions = {level: action_checkboxes(f"Fatigue {level}", actions) for level in levels}
+
+st.subheader("🚑 Health Crisis Actions")
+health_crisis_actions = {level: action_checkboxes(f"Health Crisis {level}", actions) for level in levels}
+
+# Real-Time Data Display - Tesla-Style Grid
+st.subheader("📊 Real-Time Driver Health Data")
+data_placeholder = st.empty()
+
+st.subheader("🚦 Alert System")
+alert_placeholder = st.empty()
 
 if monitoring:
     while True:
@@ -99,11 +108,3 @@ if st.button("📉 Generate Trip Summary", use_container_width=True):
     
     if summary_data['Health Alerts Triggered'] > 0:
         st.warning("⚠️ Health alerts were triggered during the trip. Review details.")
-    
-st.sidebar.subheader("🔧 Personalization Settings")
-alert_threshold = st.sidebar.slider("Fatigue Alert Sensitivity", 1, 10, 5)
-st.sidebar.write(f"Current Sensitivity Level: {alert_threshold}")
-
-data_privacy = st.sidebar.checkbox("Enable Data Encryption", value=True)
-if data_privacy:
-    st.sidebar.success("✅ Data encryption enabled for privacy protection.")
