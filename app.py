@@ -69,6 +69,31 @@ st.title("🚗 SafeDrive Sync - Classic Dashboard UI")
 
 monitoring = st.toggle("Enable Real-Time Monitoring", value=True)
 
+# Vehicle Response Settings
+st.subheader("🚘 Configure Vehicle Actions")
+levels = ['Low', 'Moderate', 'High', 'Critical']
+actions = [
+    "No Action", "Send Notification", "Reduce Speed", "Play Calming Music", "Turn On Air Conditioning", 
+    "Adjust Seat Position", "Activate Horn", "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
+]
+
+def action_multiselect(label, actions):
+    return st.multiselect(f"{label}", actions, default=["Send Notification"])
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.subheader("🧘 Stress Actions")
+    stress_actions = {level: action_multiselect(f"Stress {level}", actions) for level in levels}
+
+with col2:
+    st.subheader("😴 Fatigue Actions")
+    fatigue_actions = {level: action_multiselect(f"Fatigue {level}", actions) for level in levels}
+
+with col3:
+    st.subheader("🚑 Health Crisis Actions")
+    health_crisis_actions = {level: action_multiselect(f"Health Crisis {level}", actions) for level in levels}
+
 # Real-Time Data Display - Classic Dashboard Look
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
@@ -101,26 +126,6 @@ if monitoring:
             
             if "Send Notification" in action_dict.get(current_level, []):
                 notifications.append(f"<div class='alert-content'>{generate_notification(category, current_level)}</div>")
-        
-        alert_placeholder.markdown(f"""
-            <div class='dashboard-container'>
-                <div class='dashboard-box alert-box'>
-                    <div class='alert-title'>📡 Internal Monitoring</div>
-                    {''.join(alerts)}
-                </div>
-                <div class='dashboard-box action-box'>
-                    <div class='alert-title'>🚗 Vehicle Actions</div>
-                    {''.join(actions_taken)}
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        notification_placeholder.markdown(f"""
-            <div class='dashboard-box notification-box'>
-                <div class='alert-title'>📢 Notifications</div>
-                {''.join(notifications) if notifications else "✅ No notifications sent."}
-            </div>
-        """, unsafe_allow_html=True)
         
         time.sleep(3)
 else:
