@@ -34,11 +34,15 @@ monitoring = st.sidebar.toggle("Enable Real-Time Monitoring", value=True)
 
 st.sidebar.subheader("🚘 Vehicle Response Settings")
 levels = ['Low', 'Moderate', 'High', 'Critical']
-actions = ["No Action", "Send Notification", "Reduce Speed", "Play Calming Music", "Turn On Air Conditioning", "Adjust Seat Position", "Activate Horn", "Call Emergency Services", "Activate Autopilot"]
+actions = {
+    "Basic": ["No Action", "Send Notification"],
+    "Comfort": ["Reduce Speed", "Play Calming Music", "Turn On Air Conditioning", "Adjust Seat Position"],
+    "Emergency": ["Activate Horn", "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"]
+}
 
-stress_actions = {level: st.sidebar.multiselect(f"Stress - {level}", actions, default=["Send Notification"]) for level in levels}
-fatigue_actions = {level: st.sidebar.multiselect(f"Fatigue - {level}", actions, default=["Send Notification"]) for level in levels}
-health_crisis_actions = {level: st.sidebar.multiselect(f"Health Crisis - {level}", actions, default=["Send Notification"]) for level in levels}
+stress_actions = {level: st.sidebar.multiselect(f"Stress - {level}", sum(actions.values(), []), default=["Send Notification"]) for level in levels}
+fatigue_actions = {level: st.sidebar.multiselect(f"Fatigue - {level}", sum(actions.values(), []), default=["Send Notification"]) for level in levels}
+health_crisis_actions = {level: st.sidebar.multiselect(f"Health Crisis - {level}", sum(actions.values(), []), default=["Send Notification"]) for level in levels}
 
 # Dynamic Data Display
 col1, col2 = st.columns(2)
