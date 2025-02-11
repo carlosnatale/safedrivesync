@@ -40,10 +40,16 @@ fatigue_actions_moderate = st.sidebar.multiselect(
     default=["Send Notifications Only"]
 )
 
-health_crisis_actions = st.sidebar.multiselect(
-    "Select Actions for Health Crisis:",
+health_crisis_actions_critical = st.sidebar.multiselect(
+    "Select Actions for Critical Health Crisis:",
     ["Call Emergency Services", "Alert Emergency Contacts", "Activate Autopilot", "Flash Alert Lights", "Rock Seat or Steering Wheel"],
     default=["Call Emergency Services", "Alert Emergency Contacts"]
+)
+
+health_crisis_actions_warning = st.sidebar.multiselect(
+    "Select Actions for Warning Health Crisis:",
+    ["Send Notifications Only", "Suggest Medical Assistance", "Reduce Speed", "Activate Air Conditioning"],
+    default=["Send Notifications Only"]
 )
 
 stress_actions_high = st.sidebar.multiselect(
@@ -84,10 +90,12 @@ if monitoring:
         if not disable_notifications_health:
             if fake_data['Health Crisis Risk'] == 'Critical':
                 st.error("🚨 Critical Health Warning! Emergency services alerted.")
-                for action in health_crisis_actions:
+                for action in health_crisis_actions_critical:
                     st.warning(f"🚑 Action Triggered: {action}")
             elif fake_data['Health Crisis Risk'] == 'Warning':
                 st.warning("⚠️ Health anomaly detected. Monitor closely.")
+                for action in health_crisis_actions_warning:
+                    st.info(f"📢 Action Triggered: {action}")
         
         # Stress alert
         if not disable_notifications_stress:
