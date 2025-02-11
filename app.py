@@ -43,22 +43,22 @@ actions = [
     "Adjust Seat Position", "Activate Horn", "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
 ]
 
-def action_dropdown(label, actions):
-    return st.selectbox(f"{label}", actions, index=1)
+def action_multiselect(label, actions):
+    return st.multiselect(f"{label}", actions, default=["Send Notification"])
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
     st.subheader("🧘 Stress Actions")
-    stress_actions = {level: action_dropdown(f"Stress {level}", actions) for level in levels}
+    stress_actions = {level: action_multiselect(f"Stress {level}", actions) for level in levels}
 
 with col2:
     st.subheader("😴 Fatigue Actions")
-    fatigue_actions = {level: action_dropdown(f"Fatigue {level}", actions) for level in levels}
+    fatigue_actions = {level: action_multiselect(f"Fatigue {level}", actions) for level in levels}
 
 with col3:
     st.subheader("🚑 Health Crisis Actions")
-    health_crisis_actions = {level: action_dropdown(f"Health Crisis {level}", actions) for level in levels}
+    health_crisis_actions = {level: action_multiselect(f"Health Crisis {level}", actions) for level in levels}
 
 # Real-Time Data Display - Classic Dashboard Look
 st.subheader("📊 Real-Time Driver Health Data")
@@ -75,16 +75,16 @@ if monitoring:
         alerts = []
 
         for level in levels:
-            selected_fatigue_action = fatigue_actions[level]
-            selected_stress_action = stress_actions[level]
-            selected_health_action = health_crisis_actions[level]
+            selected_fatigue_actions = ", ".join(fatigue_actions[level])
+            selected_stress_actions = ", ".join(stress_actions[level])
+            selected_health_actions = ", ".join(health_crisis_actions[level])
             
             if fake_data['Fatigue Risk'] == level:
-                alerts.append(f"⚠️ Fatigue Risk {level}: {selected_fatigue_action}")
+                alerts.append(f"⚠️ Fatigue Risk {level}: {selected_fatigue_actions}")
             if fake_data['Stress Level'] == level:
-                alerts.append(f"💆‍♂️ Stress Level {level}: {selected_stress_action}")
+                alerts.append(f"💆‍♂️ Stress Level {level}: {selected_stress_actions}")
             if fake_data['Health Crisis Risk'] == level:
-                alerts.append(f"🚑 Health Crisis {level}: {selected_health_action}")
+                alerts.append(f"🚑 Health Crisis {level}: {selected_health_actions}")
 
         alert_placeholder.warning("\n".join(alerts) if alerts else "✅ No critical alerts detected.")
         time.sleep(3)
