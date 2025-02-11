@@ -21,17 +21,18 @@ st.title("🚗 SafeDrive Sync - Driver Safety & Health Monitor")
 st.sidebar.header("Settings")
 monitoring = st.sidebar.checkbox("Enable Real-Time Monitoring", value=True)
 
-# Vehicle Behavior Customization
+# Vehicle Behavior Customization Based on Thresholds
 st.sidebar.subheader("🚘 Vehicle Response Settings")
-vehicle_actions = st.sidebar.multiselect(
-    "Select Actions to Trigger in Emergency Situations:",
-    [
-        "Send Notifications Only", "Call Emergency Services", "Alert Emergency Contacts", 
-        "Open Windows", "Increase Radio Volume", "Rock Seat or Steering Wheel", 
-        "Activate Horn", "Flash Alert Lights", "Reduce Speed", "Turn On Air Conditioning", 
-        "Activate Autopilot", "Adjust Seat Position", "Trigger Adaptive Driving Mode"
-    ],
+fatigue_actions = st.sidebar.multiselect(
+    "Select Actions for Fatigue Risk:",
+    ["Send Notifications Only", "Reduce Speed", "Turn On Air Conditioning", "Adjust Seat Position", "Activate Horn"],
     default=["Send Notifications Only"]
+)
+
+health_crisis_actions = st.sidebar.multiselect(
+    "Select Actions for Health Crisis:",
+    ["Call Emergency Services", "Alert Emergency Contacts", "Activate Autopilot", "Flash Alert Lights", "Rock Seat or Steering Wheel"],
+    default=["Call Emergency Services", "Alert Emergency Contacts"]
 )
 
 if monitoring:
@@ -48,26 +49,18 @@ if monitoring:
         # Fatigue alert
         if fake_data['Fatigue Risk'] == 'High':
             st.error("🚨 High Fatigue Risk! Take a break immediately.")
-            if "Call Emergency Services" in vehicle_actions:
-                st.warning("📞 Calling emergency services...")
-            if "Alert Emergency Contacts" in vehicle_actions:
-                st.warning("📢 Notifying emergency contacts...")
-            if "Reduce Speed" in vehicle_actions:
-                st.warning("🚗 Reducing vehicle speed for safety...")
-            if "Activate Horn" in vehicle_actions:
-                st.warning("📢 Activating horn to alert surroundings...")
-
+            for action in fatigue_actions:
+                st.warning(f"🚗 Action Triggered: {action}")
         elif fake_data['Fatigue Risk'] == 'Moderate':
             st.warning("⚠️ Moderate Fatigue Detected. Consider resting soon.")
+            if "Send Notifications Only" in fatigue_actions:
+                st.info("📢 Notification Sent: Fatigue Level Moderate")
         
         # Health crisis alert
         if fake_data['Health Crisis Risk'] == 'Critical':
             st.error("🚨 Critical Health Warning! Emergency services alerted.")
-            if "Activate Autopilot" in vehicle_actions:
-                st.warning("🤖 Engaging autopilot mode for safety...")
-            if "Flash Alert Lights" in vehicle_actions:
-                st.warning("🚨 Flashing hazard lights to alert nearby vehicles...")
-
+            for action in health_crisis_actions:
+                st.warning(f"🚑 Action Triggered: {action}")
         elif fake_data['Health Crisis Risk'] == 'Warning':
             st.warning("⚠️ Health anomaly detected. Monitor closely.")
         
