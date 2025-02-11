@@ -2,223 +2,210 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import time
-import plotly.graph_objects as go
 from datetime import datetime
 
 # Constants
-CONFIG = {
-    "page_title": "SafeDrive Sync",
-    "layout": "wide",
-    "metrics_update_interval": 3,
-    "data_history_length": 20,
-    "colors": {
-        "primary": "#007bff",
-        "secondary": "#6c757d",
-        "success": "#28a745",
-        "danger": "#dc3545",
-        "warning": "#ffc107",
-        "info": "#17a2b8"
-    }
+COLORS = {
+    "primary": "#1e88e5",
+    "secondary": "#263238",
+    "success": "#43a047",
+    "warning": "#ffb300",
+    "danger": "#e53935",
+    "background": "#0d1117",
+    "gauge": "#2d3436"
 }
 
-# Initialize session state
-if 'monitoring' not in st.session_state:
-    st.session_state.monitoring = False
-if 'historical_data' not in st.session_state:
-    st.session_state.historical_data = pd.DataFrame()
+# Configure page
+st.set_page_config(
+    page_title="SafeDrive Dashboard",
+    layout="wide",
+    page_icon="🚘"
+)
 
-# Custom CSS
-def load_css():
-    st.markdown(f"""
-        <style>
-            .main {{ background-color: #f8f9fa; }}
-            .metric-card {{ 
-                background: white; 
-                border-radius: 10px;
-                padding: 20px;
-                margin: 10px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            }}
-            .critical-alert {{ 
-                animation: pulse 1.5s infinite;
-                border: 2px solid {CONFIG['colors']['danger']};
-            }}
-            @keyframes pulse {{
-                0% {{ opacity: 1; }}
-                50% {{ opacity: 0.5; }}
-                100% {{ opacity: 1; }}
-            }}
-            @media (max-width: 768px) {{
-                .dashboard-container {{ flex-direction: column; }}
-            }}
-        </style>
-    """, unsafe_allow_html=True)
+# Custom CSS for vehicle dashboard
+st.markdown(f"""
+    <style>
+        body {{ background-color: {COLORS['background']}; color: white; }}
+        .main {{ padding: 2rem; }}
+        .dashboard-header {{ 
+            background: {COLORS['secondary']};
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }}
+        .vital-card {{
+            background: {COLORS['secondary']};
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem;
+            border-left: 5px solid {COLORS['primary']};
+        }}
+        .critical-alert {{
+            background: {COLORS['danger']} !important;
+            animation: pulse 1.5s infinite;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem;
+        }}
+        @keyframes pulse {{
+            0% {{ opacity: 1; }}
+            50% {{ opacity: 0.5; }}
+            100% {{ opacity: 1; }}
+        }}
+        .metric-label {{ color: #90a4ae; font-size: 1rem; }}
+        .metric-value {{ color: white; font-size: 2rem; font-weight: bold; }}
+        .progress-bar {{
+            height: 10px;
+            background: {COLORS['secondary']};
+            border-radius: 5px;
+            margin: 0.5rem 0;
+        }}
+        .progress-fill {{ 
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }}
+    </style>
+""", unsafe_allow_html=True)
 
-class DataGenerator:
-    @staticmethod
-    def generate_biometrics():
-        levels = ['Low', 'Moderate', 'High', 'Critical']
-        return {
-            'timestamp': datetime.now(),
-            'heart_rate': np.random.randint(60, 110),
-            'hrv': np.random.randint(20, 80),
-            'spO2': np.random.randint(90, 100),
-            'motion': np.random.randint(0, 10),
-            'stress': np.random.choice(levels, p=[0.6, 0.25, 0.1, 0.05]),
-            'fatigue': np.random.choice(levels, p=[0.5, 0.3, 0.15, 0.05]),
-            'health_risk': np.random.choice(levels, p=[0.55, 0.25, 0.15, 0.05])
-        }
+# Simulated vehicle data
+def generate_vehicle_data():
+    return {
+        "timestamp": datetime.now().strftime("%H:%M:%S"),
+        "speed": np.random.randint(0, 120),
+        "rpm": np.random.randint(1000, 4000),
+        "fuel": np.random.uniform(10, 60),
+        "engine_temp": np.random.randint(80, 110),
+        "driver_heart_rate": np.random.randint(60, 100),
+        "driver_stress": np.random.randint(0, 100),
+        "driver_fatigue": np.random.randint(0, 100),
+        "lane_deviation": np.random.choice([True, False], p=[0.1, 0.9]),
+        "forward_collision_warning": np.random.choice([True, False], p=[0.05, 0.95])
+    }
+
+# Dashboard Layout
+st.title("🚘 SafeDrive Vehicle Dashboard")
+
+# Alert System
+alert_container = st.empty()
+
+# Main Dashboard Grid
+col1, col2, col3 = st.columns([2, 1, 2])
+
+with col1:
+    st.markdown("### Driver Status")
+    driver_container = st.container()
     
-    @classmethod
-    def generate_historical_data(cls, length=20):
-        return pd.DataFrame([cls.generate_biometrics() for _ in range(length)])
+    st.markdown("### Vehicle Health")
+    vehicle_container = st.container()
 
-class DashboardComponents:
-    @staticmethod
-    def create_gauge(value, title, min_val, max_val, color):
-        fig = go.Figure(go.Indicator(
-            mode = "gauge+number",
-            value = value,
-            domain = {'x': [0, 1], 'y': [0, 1]},
-            title = {'text': title},
-            gauge = {
-                'axis': {'range': [min_val, max_val]},
-                'bar': {'color': color},
-                'steps': [
-                    {'range': [min_val, max_val*0.6], 'color': CONFIG['colors']['success']},
-                    {'range': [max_val*0.6, max_val*0.8], 'color': CONFIG['colors']['warning']},
-                    {'range': [max_val*0.8, max_val], 'color': CONFIG['colors']['danger']}
-                ]
-            }
-        ))
-        fig.update_layout(margin=dict(t=0, b=0))
-        return fig
-
-    @staticmethod
-    def risk_level_badge(level):
-        color_map = {
-            'Low': CONFIG['colors']['success'],
-            'Moderate': CONFIG['colors']['warning'],
-            'High': CONFIG['colors']['danger'],
-            'Critical': CONFIG['colors']['danger']
-        }
-        return f"<span style='color: white; background: {color_map[level]}; padding: 2px 10px; border-radius: 15px;'>{level}</span>"
-
-def main():
-    # Page setup
-    st.set_page_config(
-        page_title=CONFIG['page_title'],
-        layout=CONFIG['layout'],
-        page_icon="🚗"
-    )
-    load_css()
-
-    # Sidebar controls
-    with st.sidebar:
-        st.header("Monitoring Controls")
-        st.session_state.monitoring = st.toggle(
-            "Real-time Monitoring", 
-            value=st.session_state.monitoring,
-            help="Enable continuous biometric monitoring"
-        )
-        update_freq = st.select_slider(
-            "Update Frequency (seconds)",
-            options=[1, 2, 3, 5, 10],
-            value=CONFIG['metrics_update_interval']
-        )
-
-    # Main dashboard layout
-    st.title("🚗 SafeDrive Sync - Driver Monitoring System")
-    
-    # Real-time metrics
-    metrics_container = st.container()
-    alerts_container = st.container()
-    charts_container = st.container()
-
-    with metrics_container:
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.markdown("### ❤️ Cardiovascular Health")
-        with col2:
-            st.markdown("### 🧠 Cognitive State")
-        with col3:
-            st.markdown("### 🚗 Vehicle Status")
-
-    # Data generation and display
-    if st.session_state.monitoring:
-        try:
-            while st.session_state.monitoring:
-                new_data = DataGenerator.generate_biometrics()
-                
-                # Update historical data
-                st.session_state.historical_data = pd.concat([
-                    st.session_state.historical_data,
-                    pd.DataFrame([new_data])
-                ]).tail(CONFIG['data_history_length'])
-
-                # Update metrics
-                with metrics_container:
-                    col1, col2, col3 = st.columns(3)
-                    
-                    # Cardiovascular Health
-                    with col1:
-                        st.plotly_chart(DashboardComponents.create_gauge(
-                            new_data['heart_rate'], "Heart Rate", 60, 110, CONFIG['colors']['primary']
-                        ), use_container_width=True)
-                        
-                        cols = st.columns(2)
-                        with cols[0]:
-                            st.metric("HRV", f"{new_data['hrv']} ms")
-                        with cols[1]:
-                            st.metric("SpO2", f"{new_data['spO2']}%")
-
-                    # Cognitive State
-                    with col2:
-                        st.markdown(f"""
-                            <div class='metric-card'>
-                                <h4>Stress Level</h4>
-                                {DashboardComponents.risk_level_badge(new_data['stress'])}
-                            </div>
-                        """, unsafe_allow_html=True)
-                        
-                        st.markdown(f"""
-                            <div class='metric-card'>
-                                <h4>Fatigue Risk</h4>
-                                {DashboardComponents.risk_level_badge(new_data['fatigue'])}
-                            </div>
-                        """, unsafe_allow_html=True)
-
-                    # Vehicle Status
-                    with col3:
-                        st.markdown(f"""
-                            <div class='metric-card'>
-                                <h4>Health Crisis Risk</h4>
-                                {DashboardComponents.risk_level_badge(new_data['health_risk'])}
-                            </div>
-                        """, unsafe_allow_html=True)
-                        
-                        st.metric("Motion Intensity", f"{new_data['motion']}/10")
-
-                # Alerts system
-                with alerts_container:
-                    if new_data['health_risk'] in ['High', 'Critical']:
-                        st.error("🚨 CRITICAL HEALTH RISK DETECTED! Initiate emergency protocols!", icon="⚠️")
-                    
-                    if new_data['fatigue'] == 'Critical':
-                        st.warning("😴 CRITICAL FATIGUE LEVEL! Recommend immediate rest break", icon="⚠️")
-
-                # Historical charts
-                with charts_container:
-                    st.line_chart(
-                        st.session_state.historical_data.set_index('timestamp')[['heart_rate', 'hrv', 'spO2']],
-                        use_container_width=True
-                    )
-
-                time.sleep(update_freq)
+with col2:
+    st.markdown("### Critical Metrics")
+    with st.container():
+        st.markdown('<div class="vital-card">', unsafe_allow_html=True)
+        st.markdown('<div class="metric-label">Current Speed</div>', unsafe_allow_html=True)
+        speed_display = st.markdown('<div class="metric-value">0</div> km/h', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
         
-        except Exception as e:
-            st.error(f"Monitoring interrupted: {str(e)}")
-            st.session_state.monitoring = False
+        st.markdown('<div class="vital-card">', unsafe_allow_html=True)
+        st.markdown('<div class="metric-label">Engine RPM</div>', unsafe_allow_html=True)
+        rpm_display = st.markdown('<div class="metric-value">0</div> RPM', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-if __name__ == "__main__":
-    main()
+with col3:
+    st.markdown("### Environment")
+    env_container = st.container()
+    
+    st.markdown("### Emergency Protocols")
+    emergency_container = st.container()
+
+# Data simulation and update
+while True:
+    data = generate_vehicle_data()
+    
+    # Update alerts
+    alerts = []
+    if data['forward_collision_warning']:
+        alerts.append(f"🚨 **Forward Collision Warning**: Maintain safe distance!")
+    if data['lane_deviation']:
+        alerts.append("⚠️ **Lane Departure**: Correct steering position")
+    if data['driver_fatigue'] > 70:
+        alerts.append("😴 **Driver Fatigue Detected**: Suggest rest break")
+    if data['driver_stress'] > 80:
+        alerts.append("💢 **High Stress Level**: Activating comfort systems")
+    
+    alert_content = ""
+    if alerts:
+        alert_content = f"""
+        <div class="critical-alert">
+            {'<br>'.join(alerts)}
+        </div>
+        """
+    alert_container.markdown(alert_content, unsafe_allow_html=True)
+    
+    # Update driver status
+    with driver_container:
+        cols = st.columns(2)
+        with cols[0]:
+            st.markdown(f"""
+                <div class="vital-card">
+                    <div class="metric-label">Heart Rate</div>
+                    <div class="metric-value">{data['driver_heart_rate']} BPM</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {data['driver_heart_rate']/2}%; background: {COLORS['primary']};"></div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+        
+        with cols[1]:
+            stress_color = COLORS['warning'] if data['driver_stress'] > 50 else COLORS['success']
+            st.markdown(f"""
+                <div class="vital-card">
+                    <div class="metric-label">Stress Level</div>
+                    <div class="metric-value">{data['driver_stress']}%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {data['driver_stress']}%; background: {stress_color};"></div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+    
+    # Update vehicle metrics
+    speed_display.markdown(f'<div class="metric-value">{data["speed"]}</div> km/h', unsafe_allow_html=True)
+    rpm_display.markdown(f'<div class="metric-value">{data["rpm"]}</div> RPM', unsafe_allow_html=True)
+    
+    # Update vehicle health
+    with vehicle_container:
+        cols = st.columns(2)
+        with cols[0]:
+            st.markdown(f"""
+                <div class="vital-card">
+                    <div class="metric-label">Fuel Level</div>
+                    <div class="metric-value">{data['fuel']:.1f} L</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {(data['fuel']/60)*100}%; background: {COLORS['success']};"></div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+        
+        with cols[1]:
+            temp_color = COLORS['danger'] if data['engine_temp'] > 100 else COLORS['success']
+            st.markdown(f"""
+                <div class="vital-card">
+                    <div class="metric-label">Engine Temp</div>
+                    <div class="metric-value">{data['engine_temp']}°C</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {(data['engine_temp']-80)/30*100}%; background: {temp_color};"></div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+    
+    # Update emergency protocols
+    with emergency_container:
+        if any([data['forward_collision_warning'], data['driver_fatigue'] > 90]):
+            st.button("🆘 EMERGENCY STOP", type="primary", use_container_width=True)
+            st.button("🚑 Call Emergency Services", use_container_width=True)
+        else:
+            st.button("🔊 Sound Horn", use_container_width=True)
+            st.button("💡 Flash Lights", use_container_width=True)
+    
+    time.sleep(1)
