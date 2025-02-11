@@ -16,11 +16,11 @@ st.markdown("""
         .stSidebar { background: #e9ecef; }
         .dashboard-container { display: flex; justify-content: space-between; padding: 10px; }
         .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 1px solid #ced4da; text-align: left; }
-        .alert-box { padding: 15px; border-radius: 10px; background: #ffeeba; border: 1px solid #ff851b; text-align: left; }
-        .action-box { padding: 15px; border-radius: 10px; background: #cce5ff; border: 1px solid #004085; text-align: left; }
-        .alert-title { font-weight: bold; font-size: 18px; margin-bottom: 10px; text-align: center; }
-        .alert-content { font-size: 16px; padding: 5px 10px; }
-        .critical-alert { background: #f8d7da; border: 1px solid #dc3545; color: #721c24; padding: 10px; border-radius: 5px; font-weight: bold; }
+        .alert-box { padding: 15px; border-radius: 10px; background: #fff3cd; border: 2px solid #ff851b; text-align: left; }
+        .action-box { padding: 15px; border-radius: 10px; background: #d1ecf1; border: 2px solid #004085; text-align: left; }
+        .alert-title { font-weight: bold; font-size: 20px; margin-bottom: 10px; text-align: center; }
+        .alert-content { font-size: 18px; padding: 10px 15px; }
+        .critical-alert { background: #f8d7da; border: 2px solid #dc3545; color: #721c24; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 20px; text-align: center; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -97,7 +97,7 @@ if monitoring:
             alert_class = "critical-alert" if current_level == "Critical" else "alert-content"
             alert_message = f"{icon} {category} Level: {current_level}" if current_level != "Low" else "Normal Condition"
             selected_actions = "<br>".join(action_dict.get(current_level, ["No Action Required"]))
-            alerts.append(f"<div class='{alert_class}'><strong>{category}:</strong> {alert_message}</div>")
+            alerts.append(f"<div class='{alert_class}'>{alert_message}</div>")
             actions_taken.append(f"<div class='alert-content'><strong>{category}:</strong> {selected_actions}</div>")
         
         alert_placeholder.markdown(f"""
@@ -116,26 +116,3 @@ if monitoring:
         time.sleep(3)
 else:
     st.write("Monitoring is disabled. Enable it from the sidebar.")
-
-# Post-trip Summary Button
-if st.button("📉 Generate Trip Summary", use_container_width=True):
-    summary_data = {
-        'Average Heart Rate': np.random.randint(70, 100),
-        'Average HRV': np.random.randint(30, 70),
-        'Average SpO2': np.random.randint(92, 99),
-        'Fatigue Events Detected': np.random.randint(0, 5),
-        'Stress Events Detected': np.random.randint(0, 5),
-        'Health Alerts Triggered': np.random.randint(0, 3)
-    }
-    st.subheader("🔍 Trip Summary")
-    st.json(summary_data)
-    
-    if summary_data['Fatigue Events Detected'] > 3:
-        st.error("🚨 Fatigue detected multiple times! Reduce driving hours.")
-    elif summary_data['Fatigue Events Detected'] > 0:
-        st.warning("⚠️ Fatigue incidents occurred. Consider reviewing sleep patterns.")
-    else:
-        st.success("✅ No fatigue events detected. Safe driving!")
-    
-    if summary_data['Health Alerts Triggered'] > 0:
-        st.warning("⚠️ Health alerts were triggered during the trip. Review details.")
