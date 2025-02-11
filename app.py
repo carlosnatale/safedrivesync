@@ -59,7 +59,6 @@ def generate_fake_data():
         'SpO2 (%)': np.random.randint(90, 100),
         'Blood Pressure (mmHg)': f"{np.random.randint(90, 140)}/{np.random.randint(60, 90)}",
         'Blood Sugar (mg/dL)': np.random.randint(70, 140),
-        'Oxygenation (%)': np.random.randint(90, 100),
         'Motion Intensity': np.random.randint(0, 10),
         'Stress Level': np.random.choice(levels),
         'Fatigue Risk': np.random.choice(levels, p=[0.5, 0.3, 0.15, 0.05]),
