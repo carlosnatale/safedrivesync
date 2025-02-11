@@ -28,7 +28,10 @@ def generate_fake_data():
         'Motion Intensity': np.random.randint(0, 10),
         'Stress Level': np.random.choice(['Low', 'Moderate', 'High', 'Critical']),
         'Fatigue Risk': np.random.choice(['Low', 'Moderate', 'High', 'Critical'], p=[0.5, 0.3, 0.15, 0.05]),
-        'Health Crisis Risk': np.random.choice(['Low', 'Moderate', 'High', 'Critical'], p=[0.6, 0.2, 0.1, 0.1])  # Fixed probabilities
+        'Health Crisis Risk': np.random.choice(
+            ['Low', 'Moderate', 'High', 'Critical'], 
+            p=np.round([0.59, 0.2, 0.11, 0.1], 2)  # Ensures exact sum of 1.0
+        )
     }
 
 st.title("🚗 SafeDrive Sync - Classic Dashboard UI")
