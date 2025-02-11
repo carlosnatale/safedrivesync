@@ -23,9 +23,20 @@ monitoring = st.sidebar.checkbox("Enable Real-Time Monitoring", value=True)
 
 # Vehicle Behavior Customization Based on Thresholds
 st.sidebar.subheader("🚘 Vehicle Response Settings")
-fatigue_actions = st.sidebar.multiselect(
-    "Select Actions for Fatigue Risk:",
+
+disable_notifications_fatigue = st.sidebar.checkbox("Disable Fatigue Notifications", value=False)
+disable_notifications_stress = st.sidebar.checkbox("Disable Stress Notifications", value=False)
+disable_notifications_health = st.sidebar.checkbox("Disable Health Crisis Notifications", value=False)
+
+fatigue_actions_high = st.sidebar.multiselect(
+    "Select Actions for High Fatigue Risk:",
     ["Send Notifications Only", "Reduce Speed", "Turn On Air Conditioning", "Adjust Seat Position", "Activate Horn"],
+    default=["Send Notifications Only"]
+)
+
+fatigue_actions_moderate = st.sidebar.multiselect(
+    "Select Actions for Moderate Fatigue Risk:",
+    ["Send Notifications Only", "Suggest a Short Break", "Play Relaxing Sounds", "Increase Seat Comfort"],
     default=["Send Notifications Only"]
 )
 
@@ -33,6 +44,18 @@ health_crisis_actions = st.sidebar.multiselect(
     "Select Actions for Health Crisis:",
     ["Call Emergency Services", "Alert Emergency Contacts", "Activate Autopilot", "Flash Alert Lights", "Rock Seat or Steering Wheel"],
     default=["Call Emergency Services", "Alert Emergency Contacts"]
+)
+
+stress_actions_high = st.sidebar.multiselect(
+    "Select Actions for High Stress Level:",
+    ["Send Notifications Only", "Play Calming Music", "Adjust Seat Position", "Activate Air Conditioning", "Reduce Speed"],
+    default=["Send Notifications Only"]
+)
+
+stress_actions_moderate = st.sidebar.multiselect(
+    "Select Actions for Moderate Stress Level:",
+    ["Send Notifications Only", "Suggest Deep Breathing", "Lower Radio Volume", "Adjust Cabin Lighting"],
+    default=["Send Notifications Only"]
 )
 
 if monitoring:
@@ -47,22 +70,35 @@ if monitoring:
         placeholder.dataframe(df)
         
         # Fatigue alert
-        if fake_data['Fatigue Risk'] == 'High':
-            st.error("🚨 High Fatigue Risk! Take a break immediately.")
-            for action in fatigue_actions:
-                st.warning(f"🚗 Action Triggered: {action}")
-        elif fake_data['Fatigue Risk'] == 'Moderate':
-            st.warning("⚠️ Moderate Fatigue Detected. Consider resting soon.")
-            if "Send Notifications Only" in fatigue_actions:
-                st.info("📢 Notification Sent: Fatigue Level Moderate")
+        if not disable_notifications_fatigue:
+            if fake_data['Fatigue Risk'] == 'High':
+                st.error("🚨 High Fatigue Risk! Take a break immediately.")
+                for action in fatigue_actions_high:
+                    st.warning(f"🚗 Action Triggered: {action}")
+            elif fake_data['Fatigue Risk'] == 'Moderate':
+                st.warning("⚠️ Moderate Fatigue Detected. Consider resting soon.")
+                for action in fatigue_actions_moderate:
+                    st.info(f"📢 Action Triggered: {action}")
         
         # Health crisis alert
-        if fake_data['Health Crisis Risk'] == 'Critical':
-            st.error("🚨 Critical Health Warning! Emergency services alerted.")
-            for action in health_crisis_actions:
-                st.warning(f"🚑 Action Triggered: {action}")
-        elif fake_data['Health Crisis Risk'] == 'Warning':
-            st.warning("⚠️ Health anomaly detected. Monitor closely.")
+        if not disable_notifications_health:
+            if fake_data['Health Crisis Risk'] == 'Critical':
+                st.error("🚨 Critical Health Warning! Emergency services alerted.")
+                for action in health_crisis_actions:
+                    st.warning(f"🚑 Action Triggered: {action}")
+            elif fake_data['Health Crisis Risk'] == 'Warning':
+                st.warning("⚠️ Health anomaly detected. Monitor closely.")
+        
+        # Stress alert
+        if not disable_notifications_stress:
+            if fake_data['Stress Level'] == 'High':
+                st.warning("⚠️ High Stress Level Detected. Consider relaxation measures.")
+                for action in stress_actions_high:
+                    st.warning(f"💆‍♂️ Action Triggered: {action}")
+            elif fake_data['Stress Level'] == 'Moderate':
+                st.info("🧘 Moderate Stress Detected. Take calming measures.")
+                for action in stress_actions_moderate:
+                    st.info(f"🛠️ Action Triggered: {action}")
         
         time.sleep(3)  # Simulate real-time update
 
@@ -100,4 +136,3 @@ st.sidebar.write(f"Current Sensitivity Level: {alert_threshold}")
 data_privacy = st.sidebar.checkbox("Enable Data Encryption", value=True)
 if data_privacy:
     st.sidebar.success("✅ Data encryption enabled for privacy protection.")
-    
