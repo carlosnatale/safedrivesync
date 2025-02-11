@@ -100,3 +100,4 @@ st.sidebar.write(f"Current Sensitivity Level: {alert_threshold}")
 data_privacy = st.sidebar.checkbox("Enable Data Encryption", value=True)
 if data_privacy:
     st.sidebar.success("✅ Data encryption enabled for privacy protection.")
+    
