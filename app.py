@@ -67,21 +67,12 @@ data_placeholder = st.empty()
 st.subheader("🚦 Alert System")
 alert_placeholder = st.empty()
 
-st.subheader("📋 Driver Status Summary")
-status_placeholder = st.empty()
-
 if monitoring:
     while True:
         fake_data = generate_fake_data()
         df = pd.DataFrame([fake_data])
         data_placeholder.dataframe(df, use_container_width=True)
         alerts = []
-
-        status_summary = {
-            "Current Driver Status": [],
-            "Alert System": [],
-            "Vehicle Actions": []
-        }
 
         for category, risk_key, action_dict in zip(
             ["Stress", "Fatigue", "Health Crisis"],
@@ -92,17 +83,8 @@ if monitoring:
             alert_message = f"{category} Level: {current_level}" if current_level != "Low" else "Normal Condition"
             selected_actions = ", ".join(action_dict[current_level]) if current_level != "Low" else "No Action Required"
             alerts.append(f"{category} {current_level}: {selected_actions}")
-            
-            status_summary["Current Driver Status"].append(category)
-            status_summary["Alert System"].append(alert_message)
-            status_summary["Vehicle Actions"].append(selected_actions)
         
         alert_placeholder.warning("\n".join(alerts) if alerts else "✅ No critical alerts detected.")
-
-        # Display dynamic Status Summary Table
-        status_df = pd.DataFrame(status_summary)
-        status_placeholder.dataframe(status_df, use_container_width=True)
-        
         time.sleep(3)
 else:
     st.write("Monitoring is disabled. Enable it from the sidebar.")
