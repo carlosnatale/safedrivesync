@@ -16,6 +16,9 @@ st.markdown("""
         .stSidebar { background: #e9ecef; }
         .dashboard-container { display: flex; justify-content: space-around; text-align: center; }
         .dashboard-section { padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 1px solid #ced4da; }
+        .alert-container { display: flex; flex-direction: column; gap: 10px; }
+        .alert-box { padding: 10px; border-radius: 5px; background: #ffebcc; border: 1px solid #ffa500; }
+        .action-box { padding: 10px; border-radius: 5px; background: #cce5ff; border: 1px solid #004085; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -72,6 +75,7 @@ data_placeholder = st.empty()
 
 st.subheader("🚦 Alert System")
 alert_placeholder = st.empty()
+action_placeholder = st.empty()
 
 if monitoring:
     while True:
@@ -79,6 +83,7 @@ if monitoring:
         df = pd.DataFrame([fake_data])
         data_placeholder.dataframe(df, use_container_width=True)
         alerts = []
+        actions_taken = []
 
         for category, risk_key, action_dict in zip(
             ["Stress", "Fatigue", "Health Crisis"],
@@ -88,9 +93,17 @@ if monitoring:
             current_level = fake_data[risk_key]
             alert_message = f"{category} Level: {current_level}" if current_level != "Low" else "Normal Condition"
             selected_actions = ", ".join(action_dict.get(current_level, ["No Action Required"]))
-            alerts.append(f"{category} {current_level}: {selected_actions}")
+            alerts.append(f"{category}: {alert_message}")
+            actions_taken.append(f"{category}: {selected_actions}")
         
-        alert_placeholder.warning("\n".join(alerts) if alerts else "✅ No critical alerts detected.")
+        alert_placeholder.markdown(f"""<div class='alert-container'>
+            <div class='alert-box'><strong>Notifications:</strong><br>{'<br>'.join(alerts)}</div>
+        </div>""", unsafe_allow_html=True)
+        
+        action_placeholder.markdown(f"""<div class='alert-container'>
+            <div class='action-box'><strong>Vehicle Actions:</strong><br>{'<br>'.join(actions_taken)}</div>
+        </div>""", unsafe_allow_html=True)
+        
         time.sleep(3)
 else:
     st.write("Monitoring is disabled. Enable it from the sidebar.")
