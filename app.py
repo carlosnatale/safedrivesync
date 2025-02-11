@@ -14,11 +14,11 @@ st.markdown("""
         .stButton>button { border-radius: 8px; padding: 10px; background: #007bff; color: white; border: none; }
         .stDataFrame { background-color: white; color: black; border-radius: 10px; padding: 10px; }
         .stSidebar { background: #e9ecef; }
-        .dashboard-container { display: flex; justify-content: space-around; text-align: center; }
-        .dashboard-section { padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 1px solid #ced4da; }
-        .alert-container { display: flex; flex-direction: column; gap: 10px; }
-        .alert-box { padding: 10px; border-radius: 5px; background: #ffebcc; border: 1px solid #ffa500; }
-        .action-box { padding: 10px; border-radius: 5px; background: #cce5ff; border: 1px solid #004085; }
+        .dashboard-container { display: flex; justify-content: space-between; padding: 10px; }
+        .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 1px solid #ced4da; text-align: center; }
+        .alert-box { padding: 15px; border-radius: 10px; background: #fff3cd; border: 1px solid #ffc107; text-align: left; }
+        .action-box { padding: 15px; border-radius: 10px; background: #d1ecf1; border: 1px solid #17a2b8; text-align: left; }
+        .alert-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -93,16 +93,21 @@ if monitoring:
             current_level = fake_data[risk_key]
             alert_message = f"{category} Level: {current_level}" if current_level != "Low" else "Normal Condition"
             selected_actions = ", ".join(action_dict.get(current_level, ["No Action Required"]))
-            alerts.append(f"{category}: {alert_message}")
-            actions_taken.append(f"{category}: {selected_actions}")
+            alerts.append(f"<li>{category}: {alert_message}</li>")
+            actions_taken.append(f"<li>{category}: {selected_actions}</li>")
         
-        alert_placeholder.markdown(f"""<div class='alert-container'>
-            <div class='alert-box'><strong>Notifications:</strong><br>{'<br>'.join(alerts)}</div>
-        </div>""", unsafe_allow_html=True)
-        
-        action_placeholder.markdown(f"""<div class='alert-container'>
-            <div class='action-box'><strong>Vehicle Actions:</strong><br>{'<br>'.join(actions_taken)}</div>
-        </div>""", unsafe_allow_html=True)
+        alert_placeholder.markdown(f"""
+            <div class='dashboard-container'>
+                <div class='dashboard-box alert-box'>
+                    <div class='alert-title'>📢 Notifications</div>
+                    <ul>{''.join(alerts)}</ul>
+                </div>
+                <div class='dashboard-box action-box'>
+                    <div class='alert-title'>🚗 Vehicle Actions</div>
+                    <ul>{''.join(actions_taken)}</ul>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
         
         time.sleep(3)
 else:
