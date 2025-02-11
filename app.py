@@ -102,7 +102,8 @@ if monitoring:
         fake_data = generate_fake_data()
         df = pd.DataFrame([fake_data])
         data_placeholder.dataframe(df, use_container_width=True)
-        actions_taken, notifications = [], []
+        actions_taken = {"Stress": [], "Fatigue": [], "Health Crisis": []}
+        notifications = {"Stress": [], "Fatigue": [], "Health Crisis": []}
 
         for category, risk_key, action_dict in zip(
             ["Stress", "Fatigue", "Health Crisis"],
@@ -114,24 +115,18 @@ if monitoring:
             
             for action in selected_actions:
                 if action == "Send Notification":
-                    notifications.append(generate_notification(category, current_level))
+                    notifications[category].append(generate_notification(category, current_level))
                 else:
-                    actions_taken.append(f"🚗 {action} activated due to {category} ({current_level})")
+                    actions_taken[category].append(f"🚗 {action} activated due to {category} ({current_level})")
 
         action_placeholder.markdown(
-            f"""
-            <div class='dashboard-box action-box'>
-                <div class='alert-title'>🚗 Vehicle Actions</div>
-                {''.join(actions_taken) if actions_taken else "✅ No actions taken."}
-            </div>
-            """, unsafe_allow_html=True)
+            "<div class='dashboard-box action-box'><div class='alert-title'>🚗 Vehicle Actions</div>" +
+            "<br>".join([f"<strong>{category}:</strong> {'<br>'.join(actions) if actions else '✅ No actions taken.'}" for category, actions in actions_taken.items()]) +
+            "</div>", unsafe_allow_html=True)
 
         notification_placeholder.markdown(
-            f"""
-            <div class='dashboard-box notification-box'>
-                <div class='alert-title'>📢 Car's Infotainment System Notifications</div>
-                {''.join(notifications) if notifications else "✅ No notifications sent."}
-            </div>
-            """, unsafe_allow_html=True)
+            "<div class='dashboard-box notification-box'><div class='alert-title'>📢 Car's Infotainment System Notifications</div>" +
+            "<br>".join([f"<strong>{category}:</strong> {'<br>'.join(notifs) if notifs else '✅ No notifications sent.'}" for category, notifs in notifications.items()]) +
+            "</div>", unsafe_allow_html=True)
         
         time.sleep(3)
