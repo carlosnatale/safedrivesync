@@ -104,29 +104,27 @@ action_placeholder = st.empty()
 notification_placeholder = st.empty()
 
 if monitoring:
-    while True:
-        fake_data = generate_fake_data()
-        df = pd.DataFrame([fake_data])
-        data_placeholder.dataframe(df, use_container_width=True)
-        alerts = []
-        actions_taken = []
-        notifications = []
+    fake_data = generate_fake_data()
+    df = pd.DataFrame([fake_data])
+    data_placeholder.dataframe(df, use_container_width=True)
+    alerts = []
+    actions_taken = []
+    notifications = []
 
-        for category, risk_key, action_dict in zip(
-            ["Stress", "Fatigue", "Health Crisis"],
-            ["Stress Level", "Fatigue Risk", "Health Crisis Risk"],
-            [stress_actions, fatigue_actions, health_crisis_actions]
-        ):
-            current_level = fake_data[risk_key]
-            icon = "⚠️" if current_level in ["High", "Critical"] else "✅"
-            alert_message = f"{icon} {category} Level: {current_level}" if current_level != "Low" else "✅ Normal Condition"
-            selected_actions = "<br>".join(action_dict.get(current_level, ["No Action Required"]))
-            alerts.append(f"<div class='alert-content'>{alert_message}</div>")
-            actions_taken.append(f"<div class='alert-content'><strong>{category}:</strong> {selected_actions}</div>")
-            
-            if "Send Notification" in action_dict.get(current_level, []):
-                notifications.append(f"<div class='alert-content'>{generate_notification(category, current_level)}</div>")
+    for category, risk_key, action_dict in zip(
+        ["Stress", "Fatigue", "Health Crisis"],
+        ["Stress Level", "Fatigue Risk", "Health Crisis Risk"],
+        [stress_actions, fatigue_actions, health_crisis_actions]
+    ):
+        current_level = fake_data[risk_key]
+        alert_message = f"⚠️ {category} Level: {current_level}" if current_level != "Low" else "✅ Normal Condition"
+        selected_actions = "<br>".join(action_dict.get(current_level, ["No Action Required"]))
+        alerts.append(f"<div class='alert-content'>{alert_message}</div>")
+        actions_taken.append(f"<div class='alert-content'><strong>{category}:</strong> {selected_actions}</div>")
         
-        time.sleep(3)
-else:
-    st.write("Monitoring is disabled. Enable it from the sidebar.")
+        if "Send Notification" in action_dict.get(current_level, []):
+            notifications.append(f"<div class='alert-content'>{generate_notification(category, current_level)}</div>")
+    
+    alert_placeholder.markdown("\n".join(alerts), unsafe_allow_html=True)
+    action_placeholder.markdown("\n".join(actions_taken), unsafe_allow_html=True)
+    notification_placeholder.markdown("\n".join(notifications) if notifications else "✅ No notifications sent.", unsafe_allow_html=True)
