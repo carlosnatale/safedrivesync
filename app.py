@@ -16,7 +16,7 @@ st.markdown("""
         .stSidebar { background: #e9ecef; }
         .dashboard-container { display: flex; justify-content: space-between; padding: 10px; gap: 20px; }
         .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 2px solid #ced4da; text-align: left; }
-        .alert-box { padding: 20px; border-radius: 10px; background: #ffeeba; border: 3px solid #ff851b; text-align: left; font-size: 18px; }
+        .monitoring-box { padding: 20px; border-radius: 10px; background: #e3fcef; border: 3px solid #28a745; text-align: left; font-size: 18px; }
         .action-box { padding: 20px; border-radius: 10px; background: #d1ecf1; border: 3px solid #004085; text-align: left; font-size: 18px; }
         .notification-box { padding: 20px; border-radius: 10px; background: #f8d7da; border: 3px solid #dc3545; text-align: left; font-size: 18px; }
         .alert-title { font-weight: bold; font-size: 22px; margin-bottom: 15px; text-align: center; }
@@ -49,7 +49,7 @@ def generate_notification(category, level):
 def generate_fake_data():
     levels = ['Low', 'Moderate', 'High', 'Critical']
     health_crisis_probs = np.array([0.57, 0.23, 0.1, 0.1])
-    health_crisis_probs /= health_crisis_probs.sum()  # Normalize to ensure exact sum of 1.0
+    health_crisis_probs /= health_crisis_probs.sum()
 
     return {
         'Heart Rate (bpm)': np.random.randint(60, 110),
@@ -60,7 +60,7 @@ def generate_fake_data():
         'Motion Intensity': np.random.randint(0, 10),
         'Stress Level': np.random.choice(levels),
         'Fatigue Risk': np.random.choice(levels, p=[0.5, 0.3, 0.15, 0.05]),
-        'Health Crisis Risk': np.random.choice(levels, p=health_crisis_probs)  # Ensures matching array sizes
+        'Health Crisis Risk': np.random.choice(levels, p=health_crisis_probs)
     }
 
 st.title("🚗 SafeDrive Sync - Classic Dashboard UI")
@@ -95,8 +95,6 @@ with col3:
 # Real-Time Data Display - Classic Dashboard Look
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
-
-st.subheader("🚦 Alert System")
 alert_placeholder = st.empty()
 action_placeholder = st.empty()
 notification_placeholder = st.empty()
@@ -106,19 +104,38 @@ if monitoring:
         fake_data = generate_fake_data()
         df = pd.DataFrame([fake_data])
         data_placeholder.dataframe(df, use_container_width=True)
-        alerts = []
-        notifications = []
+        monitoring_alerts, actions_taken, notifications = [], [], []
 
         for category, risk_key in zip(
             ["Stress", "Fatigue", "Health Crisis"],
             ["Stress Level", "Fatigue Risk", "Health Crisis Risk"]
         ):
             current_level = fake_data[risk_key]
-            alert_message = f"⚠️ {category} Level: {current_level}" if current_level != "Low" else "✅ Normal Condition"
-            alerts.append(alert_message)
-            
+            monitoring_alerts.append(f"⚠️ {category} Level: {current_level}")
             notifications.append(generate_notification(category, current_level))
 
-        alert_placeholder.markdown("\n".join(alerts) if alerts else "✅ No alerts.")
-        notification_placeholder.markdown("\n".join(notifications) if notifications else "✅ No notifications sent.")
+        alert_placeholder.markdown(
+            f"""
+            <div class='dashboard-box monitoring-box'>
+                <div class='alert-title'>📡 Driver Monitoring</div>
+                {''.join(monitoring_alerts)}
+            </div>
+            """, unsafe_allow_html=True)
+
+        action_placeholder.markdown(
+            f"""
+            <div class='dashboard-box action-box'>
+                <div class='alert-title'>🚗 Vehicle Actions</div>
+                {''.join(actions_taken) if actions_taken else "✅ No actions taken."}
+            </div>
+            """, unsafe_allow_html=True)
+
+        notification_placeholder.markdown(
+            f"""
+            <div class='dashboard-box notification-box'>
+                <div class='alert-title'>📢 Car's Infotainment System Notifications</div>
+                {''.join(notifications) if notifications else "✅ No notifications sent."}
+            </div>
+            """, unsafe_allow_html=True)
+        
         time.sleep(3)
