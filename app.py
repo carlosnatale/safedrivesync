@@ -10,11 +10,13 @@ def generate_fake_data():
         'HRV (ms)': np.random.randint(20, 80),
         'SpO2 (%)': np.random.randint(90, 100),
         'Motion Intensity': np.random.randint(0, 10),
-        'Fatigue Risk': np.random.choice(['Low', 'Moderate', 'High'], p=[0.6, 0.3, 0.1])
+        'Stress Level': np.random.choice(['Low', 'Moderate', 'High']),
+        'Fatigue Risk': np.random.choice(['Low', 'Moderate', 'High'], p=[0.6, 0.3, 0.1]),
+        'Health Crisis Risk': np.random.choice(['Normal', 'Warning', 'Critical'], p=[0.7, 0.2, 0.1])
     }
 
 # Streamlit UI
-st.title("🚗 SafeDrive Sync - Driver Fatigue Monitor")
+st.title("🚗 SafeDrive Sync - Driver Safety & Health Monitor")
 
 st.sidebar.header("Settings")
 monitoring = st.sidebar.checkbox("Enable Real-Time Monitoring", value=True)
@@ -36,6 +38,12 @@ if monitoring:
         elif fake_data['Fatigue Risk'] == 'Moderate':
             st.warning("⚠️ Moderate Fatigue Detected. Consider resting soon.")
         
+        # Health crisis alert
+        if fake_data['Health Crisis Risk'] == 'Critical':
+            st.error("🚨 Critical Health Warning! Emergency services alerted.")
+        elif fake_data['Health Crisis Risk'] == 'Warning':
+            st.warning("⚠️ Health anomaly detected. Monitor closely.")
+        
         time.sleep(3)  # Simulate real-time update
 
 else:
@@ -47,7 +55,9 @@ if st.button("📉 Generate Trip Summary"):
         'Average Heart Rate': np.random.randint(70, 100),
         'Average HRV': np.random.randint(30, 70),
         'Average SpO2': np.random.randint(92, 99),
-        'Fatigue Events Detected': np.random.randint(0, 5)
+        'Fatigue Events Detected': np.random.randint(0, 5),
+        'Stress Events Detected': np.random.randint(0, 5),
+        'Health Alerts Triggered': np.random.randint(0, 3)
     }
     st.subheader("🔍 Trip Summary")
     st.json(summary_data)
@@ -58,3 +68,15 @@ if st.button("📉 Generate Trip Summary"):
         st.warning("⚠️ Fatigue incidents occurred. Consider reviewing sleep patterns.")
     else:
         st.success("✅ No fatigue events detected. Safe driving!")
+    
+    if summary_data['Health Alerts Triggered'] > 0:
+        st.warning("⚠️ Health alerts were triggered during the trip. Review details.")
+    
+# User Customization Settings
+st.sidebar.subheader("🔧 Personalization Settings")
+alert_threshold = st.sidebar.slider("Fatigue Alert Sensitivity", 1, 10, 5)
+st.sidebar.write(f"Current Sensitivity Level: {alert_threshold}")
+
+data_privacy = st.sidebar.checkbox("Enable Data Encryption", value=True)
+if data_privacy:
+    st.sidebar.success("✅ Data encryption enabled for privacy protection.")
