@@ -15,10 +15,11 @@ st.markdown("""
         .stDataFrame { background-color: white; color: black; border-radius: 10px; padding: 10px; }
         .stSidebar { background: #e9ecef; }
         .dashboard-container { display: flex; justify-content: space-between; padding: 10px; }
-        .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 1px solid #ced4da; text-align: center; }
-        .alert-box { padding: 15px; border-radius: 10px; background: #fff3cd; border: 1px solid #ffc107; text-align: left; }
-        .action-box { padding: 15px; border-radius: 10px; background: #d1ecf1; border: 1px solid #17a2b8; text-align: left; }
-        .alert-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; }
+        .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 1px solid #ced4da; text-align: left; }
+        .alert-box { padding: 15px; border-radius: 10px; background: #ffeeba; border: 1px solid #ff851b; text-align: left; }
+        .action-box { padding: 15px; border-radius: 10px; background: #cce5ff; border: 1px solid #004085; text-align: left; }
+        .alert-title { font-weight: bold; font-size: 18px; margin-bottom: 10px; text-align: center; }
+        .alert-content { font-size: 16px; padding: 5px 10px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -92,19 +93,19 @@ if monitoring:
         ):
             current_level = fake_data[risk_key]
             alert_message = f"{category} Level: {current_level}" if current_level != "Low" else "Normal Condition"
-            selected_actions = ", ".join(action_dict.get(current_level, ["No Action Required"]))
-            alerts.append(f"<li>{category}: {alert_message}</li>")
-            actions_taken.append(f"<li>{category}: {selected_actions}</li>")
+            selected_actions = "<br>".join(action_dict.get(current_level, ["No Action Required"]))
+            alerts.append(f"<div class='alert-content'><strong>{category}:</strong> {alert_message}</div>")
+            actions_taken.append(f"<div class='alert-content'><strong>{category}:</strong> {selected_actions}</div>")
         
         alert_placeholder.markdown(f"""
             <div class='dashboard-container'>
                 <div class='dashboard-box alert-box'>
                     <div class='alert-title'>📢 Notifications</div>
-                    <ul>{''.join(alerts)}</ul>
+                    {''.join(alerts)}
                 </div>
                 <div class='dashboard-box action-box'>
                     <div class='alert-title'>🚗 Vehicle Actions</div>
-                    <ul>{''.join(actions_taken)}</ul>
+                    {''.join(actions_taken)}
                 </div>
             </div>
         """, unsafe_allow_html=True)
