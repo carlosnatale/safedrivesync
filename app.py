@@ -21,20 +21,20 @@ st.markdown("""
 
 # Simulate real-time biometric data generation
 def generate_fake_data():
-    health_crisis_probs = np.array([0.57, 0.23, 0.1, 0.1])
-    health_crisis_probs /= health_crisis_probs.sum()  # Ensures exact sum of 1.0
+    levels = ['Low', 'Moderate', 'High', 'Critical']
     
+    # Ensuring the probability array matches the number of levels
+    health_crisis_probs = np.array([0.57, 0.23, 0.1, 0.1])
+    health_crisis_probs /= health_crisis_probs.sum()  # Normalize to ensure exact sum of 1.0
+
     return {
         'Heart Rate (bpm)': np.random.randint(60, 110),
         'HRV (ms)': np.random.randint(20, 80),
         'SpO2 (%)': np.random.randint(90, 100),
         'Motion Intensity': np.random.randint(0, 10),
-        'Stress Level': np.random.choice(['Low', 'Moderate', 'High', 'Critical']),
-        'Fatigue Risk': np.random.choice(['Low', 'Moderate', 'High', 'Critical'], p=[0.5, 0.3, 0.15, 0.05]),
-        'Health Crisis Risk': np.random.choice(
-            ['Low', 'Moderate', 'High', 'Critical'], 
-            p=health_crisis_probs  # Normalized probabilities
-        )
+        'Stress Level': np.random.choice(levels),
+        'Fatigue Risk': np.random.choice(levels, p=[0.5, 0.3, 0.15, 0.05]),
+        'Health Crisis Risk': np.random.choice(levels, p=health_crisis_probs)  # Ensures matching array sizes
     }
 
 st.title("🚗 SafeDrive Sync - Classic Dashboard UI")
