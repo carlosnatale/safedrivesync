@@ -76,7 +76,12 @@ if monitoring:
         df = pd.DataFrame([fake_data])
         data_placeholder.dataframe(df, use_container_width=True)
         alerts = []
-        status_data = []
+
+        status_summary = {
+            "Current Driver Status": [],
+            "Alert System": [],
+            "Vehicle Actions": []
+        }
 
         for category, risk_key, action_dict in zip(
             ["Stress", "Fatigue", "Health Crisis"],
@@ -84,17 +89,19 @@ if monitoring:
             [stress_actions, fatigue_actions, health_crisis_actions]
         ):
             current_level = fake_data[risk_key]
-            levels_display = "\n".join(levels)
             alert_message = f"{category} Level: {current_level}" if current_level != "Low" else "Normal Condition"
             selected_actions = ", ".join(action_dict[current_level]) if current_level != "Low" else "No Action Required"
             alerts.append(f"{category} {current_level}: {selected_actions}")
-            status_data.append([category, levels_display, alert_message, selected_actions])
+            
+            status_summary["Current Driver Status"].append(category)
+            status_summary["Alert System"].append(alert_message)
+            status_summary["Vehicle Actions"].append(selected_actions)
         
         alert_placeholder.warning("\n".join(alerts) if alerts else "✅ No critical alerts detected.")
 
         # Display dynamic Status Summary Table
-        status_df = pd.DataFrame(status_data, columns=["Current Driver Status", "All Levels", "Alert System", "Vehicle Actions"])
-        status_placeholder.table(status_df)
+        status_df = pd.DataFrame(status_summary)
+        status_placeholder.dataframe(status_df, use_container_width=True)
         
         time.sleep(3)
 else:
