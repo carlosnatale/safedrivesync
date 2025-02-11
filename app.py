@@ -30,7 +30,7 @@ def generate_fake_data():
         'Fatigue Risk': np.random.choice(['Low', 'Moderate', 'High', 'Critical'], p=[0.5, 0.3, 0.15, 0.05]),
         'Health Crisis Risk': np.random.choice(
             ['Low', 'Moderate', 'High', 'Critical'], 
-            p=np.round([0.59, 0.2, 0.11, 0.1], 2)  # Ensures exact sum of 1.0
+            p=[0.58, 0.22, 0.1, 0.1]  # Adjusted values to ensure exact sum of 1.0
         )
     }
 
