@@ -1,76 +1,70 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
 import time
+import random
+import numpy as np
+import plotly.graph_objects as go
 
-# Streamlit UI Enhancements - Improved Dashboard Look
-st.set_page_config(page_title="SafeDrive Sync", layout="wide")
+# Configuração da página
+st.set_page_config(page_title="Sistema Anti-Sonolência", layout="wide")
 
-# Custom CSS for Improved Readability and Contrast
+# Função para simular frequência cardíaca e nível de sonolência
+def gerar_dados():
+    freq_cardiaca = random.randint(60, 100)
+    sonolencia = random.uniform(0, 1)  # 0 (alerta) a 1 (muito sonolento)
+    return freq_cardiaca, sonolencia
+
+# Layout estilo painel de carro
 st.markdown("""
     <style>
-        .main { background-color: #f8f9fa; color: black; }
-        .stAlert { font-size: 16px; }
-        .stButton>button { border-radius: 8px; padding: 10px; }
-        .stDataFrame { background-color: white; color: black; border-radius: 10px; padding: 10px; }
-        .stSidebar { background: #e9ecef; }
-        .dashboard-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 10px; }
-        .dashboard-box { padding: 15px; border-radius: 10px; background: #ffffff; border: 2px solid #ced4da; text-align: left; }
-        .action-box { background: #eef6fc; border: 3px solid #007bff; font-size: 18px; }
-        .notification-box { background: #fde2e4; border: 3px solid #dc3545; font-size: 18px; }
-        .alert-title { font-weight: bold; font-size: 22px; margin-bottom: 15px; text-align: center; }
-        .alert-content { font-size: 20px; padding: 10px 15px; }
+    .big-font { font-size: 32px !important; text-align: center; }
+    .alerta { color: red; font-weight: bold; }
+    .normal { color: green; }
+    .atenção { color: orange; }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🚗 SafeDrive Sync - Enhanced Dashboard UI")
+# Colunas para simular o painel
+col1, col2, col3 = st.columns([1, 2, 1])
 
-monitoring = st.toggle("Enable Real-Time Monitoring", value=True)
+with col1:
+    st.markdown("<h2 style='text-align: center;'>Frequência Cardíaca</h2>", unsafe_allow_html=True)
+    freq_hist = []
+    
+with col2:
+    st.markdown("<h1 style='text-align: center;'>Status do Motorista</h1>", unsafe_allow_html=True)
+    status = st.empty()
 
-# Vehicle Response Settings
-st.subheader("🚘 Configure Vehicle Actions")
-levels = ['Low', 'Moderate', 'High', 'Critical']
-actions = [
-    "No Action", "Send Notification", "Reduce Speed", "Play Calming Music", "Turn On Air Conditioning", 
-    "Adjust Seat Position", "Activate Horn", "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
-]
+with col3:
+    st.markdown("<h2 style='text-align: center;'>Nível de Sonolência</h2>", unsafe_allow_html=True)
 
-def action_dropdown(label, actions):
-    return st.selectbox(f"{label}", actions)
+# Simulação em tempo real
+freq_hist = []
+for _ in range(100):  # Simular 100 ciclos
+    freq, sono = gerar_dados()
+    freq_hist.append(freq)
+    if len(freq_hist) > 30:
+        freq_hist.pop(0)  # Manter histórico curto
 
-with st.expander("🧘 Stress Actions"):
-    stress_actions = {level: action_dropdown(f"Stress {level}", actions) for level in levels}
+    # Atualização do status do motorista
+    if sono < 0.3:
+        status.markdown("<h2 class='normal'>🚗 Alerta</h2>", unsafe_allow_html=True)
+        status_color = "green"
+    elif 0.3 <= sono < 0.7:
+        status.markdown("<h2 class='atenção'>⚠️ Atenção</h2>", unsafe_allow_html=True)
+        status_color = "orange"
+    else:
+        status.markdown("<h2 class='alerta'>🚨 Sonolento!</h2>", unsafe_allow_html=True)
+        status_color = "red"
 
-with st.expander("😴 Fatigue Actions"):
-    fatigue_actions = {level: action_dropdown(f"Fatigue {level}", actions) for level in levels}
-
-with st.expander("🚑 Health Crisis Actions"):
-    health_crisis_actions = {level: action_dropdown(f"Health Crisis {level}", actions) for level in levels}
-
-# Real-Time Data Display with Enhanced Table Formatting
-st.subheader("📊 Real-Time Driver Health Data")
-data_placeholder = st.empty()
-
-data_columns = ["Heart Rate (bpm)", "HRV (ms)", "SpO2 (%)", "Blood Pressure (mmHg)", "Blood Sugar (mg/dL)", "Motion Intensity", "Stress Level", "Fatigue Risk", "Health Crisis Risk"]
-
-def apply_table_formatting(df):
-    df.columns = [f"**{col}**" for col in df.columns]
-    return df
-
-if monitoring:
-    while True:
-        fake_data = {
-            'Heart Rate (bpm)': np.random.randint(60, 110),
-            'HRV (ms)': np.random.randint(20, 80),
-            'SpO2 (%)': np.random.randint(90, 100),
-            'Blood Pressure (mmHg)': f"{np.random.randint(90, 140)}/{np.random.randint(60, 90)}",
-            'Blood Sugar (mg/dL)': np.random.randint(70, 140),
-            'Motion Intensity': np.random.randint(0, 10),
-            'Stress Level': np.random.choice(levels),
-            'Fatigue Risk': np.random.choice(levels, p=[0.5, 0.3, 0.15, 0.05]),
-            'Health Crisis Risk': np.random.choice(levels, p=[0.57, 0.23, 0.1, 0.1])
-        }
-        
-        df = pd.DataFrame([fake_data])
-        data_placeholder.dataframe(apply_table_formatting(df), use_container_width=True)
-        time.sleep(3)
+    # Gráfico da frequência cardíaca
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(y=freq_hist, mode='lines+markers', name='Frequência', line=dict(color=status_color)))
+    fig.update_layout(title="Monitoramento Cardíaco", xaxis_title="Tempo", yaxis_title="BPM", height=300)
+    with col1:
+        st.plotly_chart(fig, use_container_width=True)
+    
+    # Indicador de nível de sonolência
+    with col3:
+        st.progress(sono)
+    
+    time.sleep(1)
