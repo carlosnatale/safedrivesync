@@ -3,69 +3,66 @@ import pandas as pd
 import numpy as np
 import time
 
-# Streamlit UI Enhancements - Modern Infotainment System
+# Streamlit UI Enhancements - Futuristic Car Dashboard
 st.set_page_config(page_title="SafeDrive Sync", layout="wide")
 
-# Custom CSS for Modern UI
+# Custom CSS for Modern Dashboard Look
 st.markdown("""
     <style>
-        body { background-color: #1a1a2e; color: #eaeaea; }
-        .main { background: #16213e; color: white; padding: 20px; }
-        .stButton>button { 
-            border-radius: 8px; 
-            padding: 12px 20px;
-            background: linear-gradient(45deg, #0066ff, #00ccff);
-            color: white; 
-            font-weight: bold; 
-            border: none; 
-            transition: 0.3s;
+        body { background-color: #000; color: #eaeaea; }
+        .main { background: #0f0f0f; color: white; padding: 20px; }
+        .dashboard-container {
+            border-radius: 20px;
+            padding: 30px;
+            background: linear-gradient(135deg, #001f3f, #005f73);
+            box-shadow: 0px 4px 15px rgba(0, 255, 255, 0.5);
+            text-align: center;
+            color: white;
         }
-        .stButton>button:hover {
-            transform: scale(1.1);
-            background: linear-gradient(45deg, #0044cc, #0099cc);
+        .speedometer {
+            font-size: 60px;
+            font-weight: bold;
+            color: #00ffff;
         }
-        .stDataFrame { 
-            background-color: rgba(255, 255, 255, 0.1); 
-            color: white; 
-            border-radius: 12px; 
-            padding: 10px; 
+        .battery {
+            font-size: 40px;
+            font-weight: bold;
+            color: #00ff00;
         }
-        .stSidebar { background: #0f3460; color: white; }
-        .dashboard-box { 
-            padding: 20px; 
-            border-radius: 15px; 
-            background: rgba(255, 255, 255, 0.1); 
-            border: 1px solid rgba(255, 255, 255, 0.2); 
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+        .info-box {
+            font-size: 22px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-top: 10px;
         }
-        .stMultiSelect > div { border-radius: 8px; background: rgba(255, 255, 255, 0.1); padding: 5px; }
-        .stDataFrame tbody tr { background: rgba(255, 255, 255, 0.1); color: white; }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🚗 SafeDrive Sync - Next-Gen Infotainment System")
+st.title("🚗 SafeDrive Sync - Futuristic Car Dashboard")
 
 monitoring = st.toggle("Enable Real-Time Monitoring", value=True)
 
-# Vehicle Response Settings
-st.subheader("🚘 Configure Vehicle Actions")
-levels = ['Low', 'Moderate', 'High', 'Critical']
-actions = [
-    "No Action", "Send Notification", "Reduce Speed", "Play Calming Music", "Turn On Air Conditioning", 
-    "Adjust Seat Position", "Activate Horn", "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
-]
+st.markdown("<div class='dashboard-container'>", unsafe_allow_html=True)
 
-def action_multiselect(label, actions):
-    return st.multiselect(f"{label}", actions, default=["Send Notification"], help="Select actions based on severity.")
+# Main Dashboard UI
+col1, col2, col3 = st.columns([2, 2, 2])
 
-col1, col2, col3 = st.columns(3)
+with col1:
+    st.markdown("<div class='info-box'><span class='battery'>🔋 97%</span><br>Battery Charge</div>", unsafe_allow_html=True)
 
-for col, category, icon in zip([col1, col2, col3], ["Stress", "Fatigue", "Health Crisis"], ["🧘", "😴", "🚑"]):
-    with col:
-        st.subheader(f"{icon} {category} Actions")
-        actions_dict = {level: action_multiselect(f"{category} {level}", actions) for level in levels}
+with col2:
+    st.markdown("<div class='info-box'><span class='speedometer'>🚗 68 MPH</span><br>Current Speed</div>", unsafe_allow_html=True)
 
+with col3:
+    st.markdown("<div class='info-box'>📏 188 km<br>Distance</div>", unsafe_allow_html=True)
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Real-Time Data
+st.subheader("📊 Driver Health Metrics")
 data_placeholder = st.empty()
+
 if monitoring:
     while True:
         fake_data = {
@@ -75,9 +72,6 @@ if monitoring:
             'Blood Pressure (mmHg)': f"{np.random.randint(90, 140)}/{np.random.randint(60, 90)}",
             'Blood Sugar (mg/dL)': np.random.randint(70, 140),
             'Motion Intensity': np.random.randint(0, 10),
-            'Stress Level': np.random.choice(levels),
-            'Fatigue Risk': np.random.choice(levels),
-            'Health Crisis Risk': np.random.choice(levels)
         }
         df = pd.DataFrame([fake_data])
         data_placeholder.dataframe(df, use_container_width=True)
