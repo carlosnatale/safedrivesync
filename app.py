@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import time
 
-# Streamlit UI Enhancements - Classic Dashboard Look
+# Streamlit 
 st.set_page_config(page_title="SafeDrive Sync", layout="wide")
 
 # Custom CSS for Classic Dashboard Look
@@ -62,7 +62,7 @@ def generate_fake_data():
         'Health Crisis Risk': np.random.choice(levels, p=health_crisis_probs)
     }
 
-st.title("🚗 SafeDrive Sync - Classic Dashboard UI")
+st.title("🚗 SafeDrive Sync - Health Dashboard")
 
 monitoring = st.toggle("Enable Real-Time Monitoring", value=True)
 
