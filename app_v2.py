@@ -9,20 +9,20 @@ st.set_page_config(page_title="SafeDrive Sync", layout="wide")
 # Custom CSS for Modern UI
 st.markdown("""
     <style>
-        body { background-color: #121212; color: #ffffff; }
-        .main { background: rgba(0, 0, 0, 0.8); color: white; }
+        body { background-color: #1a1a2e; color: #eaeaea; }
+        .main { background: #16213e; color: white; padding: 20px; }
         .stButton>button { 
-            border-radius: 10px; 
-            padding: 12px; 
-            background: linear-gradient(90deg, #0066ff, #00ccff);
+            border-radius: 8px; 
+            padding: 12px 20px;
+            background: linear-gradient(45deg, #0066ff, #00ccff);
             color: white; 
             font-weight: bold; 
             border: none; 
             transition: 0.3s;
         }
         .stButton>button:hover {
-            transform: scale(1.05);
-            background: linear-gradient(90deg, #0044cc, #0099cc);
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #0044cc, #0099cc);
         }
         .stDataFrame { 
             background-color: rgba(255, 255, 255, 0.1); 
@@ -30,7 +30,7 @@ st.markdown("""
             border-radius: 12px; 
             padding: 10px; 
         }
-        .stSidebar { background: rgba(50, 50, 50, 0.9); color: white; }
+        .stSidebar { background: #0f3460; color: white; }
         .dashboard-box { 
             padding: 20px; 
             border-radius: 15px; 
@@ -121,20 +121,4 @@ if monitoring:
         fake_data = generate_fake_data()
         df = pd.DataFrame([fake_data])
         data_placeholder.dataframe(df, use_container_width=True)
-        actions_taken = {"Stress": [], "Fatigue": [], "Health Crisis": []}
-        notifications = {"Stress": [], "Fatigue": [], "Health Crisis": []}
-        
-        for category, risk_key, action_dict in zip(
-            ["Stress", "Fatigue", "Health Crisis"],
-            ["Stress Level", "Fatigue Risk", "Health Crisis Risk"],
-            [stress_actions, fatigue_actions, health_crisis_actions]
-        ):
-            current_level = fake_data[risk_key]
-            selected_actions = action_dict.get(current_level, [])
-            for action in selected_actions:
-                if action == "Send Notification":
-                    notifications[category].append(generate_notification(category, current_level))
-                else:
-                    actions_taken[category].append(f"🚗 {action} activated due to {category} ({current_level})")
-        
         time.sleep(3)
