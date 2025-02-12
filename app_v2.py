@@ -1,70 +1,78 @@
 import streamlit as st
-import time
 import random
-import numpy as np
+import time
 import plotly.graph_objects as go
 
 # Configuração da página
-st.set_page_config(page_title="Sistema Anti-Sonolência", layout="wide")
+st.set_page_config(page_title="Simulador ADAS Veicular", layout="wide")
 
-# Função para simular frequência cardíaca e nível de sonolência
+# Função para simular dados do sistema ADAS
 def gerar_dados():
-    freq_cardiaca = random.randint(60, 100)
-    sonolencia = random.uniform(0, 1)  # 0 (alerta) a 1 (muito sonolento)
-    return freq_cardiaca, sonolencia
+    velocidade = random.randint(30, 120)  # km/h
+    distancia_objeto = random.randint(5, 200)  # metros
+    angulo_direcao = random.randint(-30, 30)  # graus
+    frenagem_automatica = distancia_objeto < 20  # Ativa se objeto estiver a menos de 20m
+    alerta_fadiga = random.choice([True, False]) if velocidade > 60 else False
+    return velocidade, distancia_objeto, angulo_direcao, frenagem_automatica, alerta_fadiga
 
-# Layout estilo painel de carro
+# Layout do painel ADAS
 st.markdown("""
     <style>
-    .big-font { font-size: 32px !important; text-align: center; }
+    .big-font { font-size: 28px !important; text-align: center; }
     .alerta { color: red; font-weight: bold; }
     .normal { color: green; }
     .atenção { color: orange; }
     </style>
 """, unsafe_allow_html=True)
 
-# Colunas para simular o painel
-col1, col2, col3 = st.columns([1, 2, 1])
+# Colunas para visualização
+col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.markdown("<h2 style='text-align: center;'>Frequência Cardíaca</h2>", unsafe_allow_html=True)
-    freq_hist = []
-    
+    st.markdown("<h2 class='big-font'>Velocidade (km/h)</h2>", unsafe_allow_html=True)
+    velocidade_display = st.empty()
+
 with col2:
-    st.markdown("<h1 style='text-align: center;'>Status do Motorista</h1>", unsafe_allow_html=True)
-    status = st.empty()
+    st.markdown("<h2 class='big-font'>Distância do Objeto (m)</h2>", unsafe_allow_html=True)
+    distancia_display = st.empty()
 
 with col3:
-    st.markdown("<h2 style='text-align: center;'>Nível de Sonolência</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 class='big-font'>Ângulo de Direção (°)</h2>", unsafe_allow_html=True)
+    angulo_display = st.empty()
+
+with col4:
+    st.markdown("<h2 class='big-font'>Frenagem Automática</h2>", unsafe_allow_html=True)
+    frenagem_display = st.empty()
 
 # Simulação em tempo real
-freq_hist = []
-for _ in range(100):  # Simular 100 ciclos
-    freq, sono = gerar_dados()
-    freq_hist.append(freq)
-    if len(freq_hist) > 30:
-        freq_hist.pop(0)  # Manter histórico curto
+grafico_velocidade = []
+grafico_distancia = []
+for _ in range(100):
+    velocidade, distancia_objeto, angulo_direcao, frenagem_automatica, alerta_fadiga = gerar_dados()
+    grafico_velocidade.append(velocidade)
+    grafico_distancia.append(distancia_objeto)
 
-    # Atualização do status do motorista
-    if sono < 0.3:
-        status.markdown("<h2 class='normal'>🚗 Alerta</h2>", unsafe_allow_html=True)
-        status_color = "green"
-    elif 0.3 <= sono < 0.7:
-        status.markdown("<h2 class='atenção'>⚠️ Atenção</h2>", unsafe_allow_html=True)
-        status_color = "orange"
-    else:
-        status.markdown("<h2 class='alerta'>🚨 Sonolento!</h2>", unsafe_allow_html=True)
-        status_color = "red"
+    if len(grafico_velocidade) > 30:
+        grafico_velocidade.pop(0)
+        grafico_distancia.pop(0)
+    
+    velocidade_display.metric(label="", value=f"{velocidade} km/h")
+    distancia_display.metric(label="", value=f"{distancia_objeto} m")
+    angulo_display.metric(label="", value=f"{angulo_direcao}°")
+    frenagem_display.markdown(
+        "<h2 class='alerta'>Ativada 🚨</h2>" if frenagem_automatica else "<h2 class='normal'>Desativada</h2>", 
+        unsafe_allow_html=True
+    )
+    
+    # Alerta de fadiga
+    if alerta_fadiga:
+        st.warning("⚠️ Alerta de fadiga! Recomenda-se uma pausa para descanso.")
 
-    # Gráfico da frequência cardíaca
+    # Gráficos de velocidade e distância do objeto
     fig = go.Figure()
-    fig.add_trace(go.Scatter(y=freq_hist, mode='lines+markers', name='Frequência', line=dict(color=status_color)))
-    fig.update_layout(title="Monitoramento Cardíaco", xaxis_title="Tempo", yaxis_title="BPM", height=300)
-    with col1:
-        st.plotly_chart(fig, use_container_width=True)
-    
-    # Indicador de nível de sonolência
-    with col3:
-        st.progress(sono)
-    
+    fig.add_trace(go.Scatter(y=grafico_velocidade, mode='lines+markers', name='Velocidade (km/h)', line=dict(color='blue')))
+    fig.add_trace(go.Scatter(y=grafico_distancia, mode='lines+markers', name='Distância do Objeto (m)', line=dict(color='red')))
+    fig.update_layout(title="Monitoramento de Velocidade e Distância", xaxis_title="Tempo", yaxis_title="Valores", height=400)
+    st.plotly_chart(fig, use_container_width=True)
+
     time.sleep(1)
