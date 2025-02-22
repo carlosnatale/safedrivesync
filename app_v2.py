@@ -55,24 +55,27 @@ st.markdown(
     }}
     .data-area {{
         position: absolute;
-        top: 35%;
-        left: 25%;
-        width: 50%;
+        top: 45%;
+        left: 20%;
+        width: 60%;
         height: auto;
         background: rgba(58, 58, 58, 0.8);
         padding: 20px;
         border-radius: 10px;
+        text-align: center;
     }}
     .alert-box {{
-        margin-top: 10px;
+        margin-top: 20px;
         background-color: rgba(255, 0, 0, 0.9);
         color: white;
         padding: 10px;
         border-radius: 5px;
         font-weight: bold;
-        width: 100%;
+        width: 80%;
         text-align: center;
         overflow-wrap: break-word;
+        margin-left: auto;
+        margin-right: auto;
     }}
     </style>
     """,
