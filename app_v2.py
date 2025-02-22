@@ -1,78 +1,127 @@
 import streamlit as st
 import random
 import time
-import plotly.graph_objects as go
+from PIL import Image
 
-# Configuração da página
-st.set_page_config(page_title="Simulador ADAS Veicular", layout="wide")
+# Load background image
+background = Image.open('/mnt/data/infotainment - Copia.png')
 
-# Função para simular dados do sistema ADAS
-def gerar_dados():
-    velocidade = random.randint(30, 120)  # km/h
-    distancia_objeto = random.randint(5, 200)  # metros
-    angulo_direcao = random.randint(-30, 30)  # graus
-    frenagem_automatica = distancia_objeto < 20  # Ativa se objeto estiver a menos de 20m
-    alerta_fadiga = random.choice([True, False]) if velocidade > 60 else False
-    return velocidade, distancia_objeto, angulo_direcao, frenagem_automatica, alerta_fadiga
+# Set page configuration
+st.set_page_config(page_title="SafeDrive Sync Simulator", layout="wide")
 
-# Layout do painel ADAS
-st.markdown("""
+# CSS styling for background
+st.markdown(
+    f"""
     <style>
-    .big-font { font-size: 28px !important; text-align: center; }
-    .alerta { color: red; font-weight: bold; }
-    .normal { color: green; }
-    .atenção { color: orange; }
+    .stApp {{
+        background-image: url('data:image/png;base64,{st.image(background, use_column_width=True)}');
+        background-size: cover;
+        background-position: center;
+    }}
+    .title {{
+        text-align: center;
+        font-size: 36px;
+        font-weight: bold;
+        color: white;
+    }}
+    .indicator {{
+        padding: 20px;
+        background-color: rgba(0, 0, 0, 0.6);
+        color: white;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }}
     </style>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True
+)
 
-# Colunas para visualização
-col1, col2, col3, col4 = st.columns(4)
+# Function to generate simulated biometric data
+def generate_biometric_data():
+    return {
+        "Heart Rate (bpm)": random.randint(60, 140),
+        "HRV (ms)": random.randint(20, 100),
+        "SpO2 (%)": random.randint(85, 100),
+        "Blood Pressure (mmHg)": f"{random.randint(90, 140)}/{random.randint(60, 90)}",
+        "Blood Sugar (mg/dL)": random.randint(70, 180),
+        "Motion Intensity": random.randint(0, 10),
+        "Stress Level": random.randint(0, 100),
+        "Fatigue Risk": random.randint(0, 100),
+        "Health Crisis Risk": random.randint(0, 100)
+    }
 
-with col1:
-    st.markdown("<h2 class='big-font'>Velocidade (km/h)</h2>", unsafe_allow_html=True)
-    velocidade_display = st.empty()
+# Function to classify conditions
+def classify_risk(value):
+    if value < 25:
+        return "Normal"
+    elif value < 50:
+        return "Moderate"
+    elif value < 75:
+        return "High"
+    else:
+        return "Critical"
 
-with col2:
-    st.markdown("<h2 class='big-font'>Distância do Objeto (m)</h2>", unsafe_allow_html=True)
-    distancia_display = st.empty()
+# Vehicle response settings
+responses = [
+    "No Action", "Send Notification", "Reduce Speed", "Play Calming Music",
+    "Turn On Air Conditioning", "Adjust Seat Position", "Activate Horn",
+    "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
+]
 
-with col3:
-    st.markdown("<h2 class='big-font'>Ângulo de Direção (°)</h2>", unsafe_allow_html=True)
-    angulo_display = st.empty()
+# Sidebar configuration for user response settings
+st.sidebar.title("Vehicle Response Settings")
+stress_response = st.sidebar.selectbox("Stress Response", responses)
+fatigue_response = st.sidebar.selectbox("Fatigue Response", responses)
+health_crisis_response = st.sidebar.selectbox("Health Crisis Response", responses)
 
-with col4:
-    st.markdown("<h2 class='big-font'>Frenagem Automática</h2>", unsafe_allow_html=True)
-    frenagem_display = st.empty()
+# Display title
+st.markdown('<div class="title">SafeDrive Sync Real-Time Monitoring</div>', unsafe_allow_html=True)
 
-# Simulação em tempo real
-grafico_velocidade = []
-grafico_distancia = []
-for _ in range(100):
-    velocidade, distancia_objeto, angulo_direcao, frenagem_automatica, alerta_fadiga = gerar_dados()
-    grafico_velocidade.append(velocidade)
-    grafico_distancia.append(distancia_objeto)
+# Real-time data simulation loop
+biometric_data = generate_biometric_data()
 
-    if len(grafico_velocidade) > 30:
-        grafico_velocidade.pop(0)
-        grafico_distancia.pop(0)
-    
-    velocidade_display.metric(label="", value=f"{velocidade} km/h")
-    distancia_display.metric(label="", value=f"{distancia_objeto} m")
-    angulo_display.metric(label="", value=f"{angulo_direcao}°")
-    frenagem_display.markdown(
-        "<h2 class='alerta'>Ativada 🚨</h2>" if frenagem_automatica else "<h2 class='normal'>Desativada</h2>", 
-        unsafe_allow_html=True
-    )
-    
-    # Alerta de fadiga
-    if alerta_fadiga:
-        st.warning("⚠️ Alerta de fadiga! Recomenda-se uma pausa para descanso.")
+# Display biometric data
+st.markdown("### Biometric Data")
+cols = st.columns(3)
+for i, (key, value) in enumerate(biometric_data.items()):
+    cols[i % 3].markdown(f'<div class="indicator">{key}: {value}</div>', unsafe_allow_html=True)
 
-    # Gráficos de velocidade e distância do objeto
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(y=grafico_velocidade, mode='lines+markers', name='Velocidade (km/h)', line=dict(color='blue')))
-    fig.add_trace(go.Scatter(y=grafico_distancia, mode='lines+markers', name='Distância do Objeto (m)', line=dict(color='red')))
-    fig.update_layout(title="Monitoramento de Velocidade e Distância", xaxis_title="Tempo", yaxis_title="Valores", height=400)
-    st.plotly_chart(fig, use_container_width=True)
+# Assess situations
+stress_status = classify_risk(biometric_data["Stress Level"])
+fatigue_status = classify_risk(biometric_data["Fatigue Risk"])
+health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"])
 
-    time.sleep(1)
+# Function to handle vehicle responses
+def handle_response(status, response, situation):
+    if response == "No Action":
+        return
+    elif response == "Send Notification":
+        messages = {
+            "Stress": {
+                "Moderate": "Moderate stress detected. Consider taking deep breaths.",
+                "High": "High stress detected! Reduce distractions and focus on the road.",
+                "Critical": "CRITICAL STRESS! Pull over safely and take a break."
+            },
+            "Fatigue": {
+                "Moderate": "Moderate fatigue detected. Consider stretching or stopping soon.",
+                "High": "High fatigue detected! Take a break immediately.",
+                "Critical": "CRITICAL FATIGUE! Your reaction time is dangerously low. Stop now."
+            },
+            "Health Crisis": {
+                "Moderate": "Mild health irregularity detected. Monitor your condition.",
+                "High": "Significant health concern! Consider seeking medical attention.",
+                "Critical": "EMERGENCY! Health crisis detected. Contact emergency services immediately."
+            }
+        }
+        st.warning(messages[situation].get(status, "All normal."))
+    else:
+        st.info(f"{response} activated due to {situation} condition: {status}")
+
+# Trigger responses
+handle_response(stress_status, stress_response, "Stress")
+handle_response(fatigue_status, fatigue_response, "Fatigue")
+handle_response(health_crisis_status, health_crisis_response, "Health Crisis")
+
+# Footer
+st.markdown("---")
+st.markdown("**SafeDrive Sync - Real-Time Driver Health Monitoring**")
