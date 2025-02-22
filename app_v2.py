@@ -16,15 +16,14 @@ background_base64 = get_base64_image('infotainment - Copia.png')
 # Set page configuration
 st.set_page_config(page_title="SafeDrive Sync Simulator", layout="wide")
 
-# Define response options
+# Vehicle Response Settings
+st.sidebar.title("Vehicle Response Settings")
 responses = [
     "Send Notification", "Reduce Speed", "Play Calming Music",
     "Turn On Air Conditioning", "Adjust Seat Position", "Activate Horn",
     "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
 ]
 
-# Sidebar response configuration
-st.sidebar.title("Vehicle Response Settings")
 stress_responses = {
     "Moderate": st.sidebar.multiselect("Stress Response - Moderate", responses),
     "High": st.sidebar.multiselect("Stress Response - High", responses),
@@ -55,7 +54,7 @@ st.markdown(
     }}
     .data-area {{
         position: absolute;
-        top: 45%; /* Lowered an additional 10% */
+        top: 65%;
         left: 30%;
         width: 40%;
         height: auto;
@@ -65,7 +64,7 @@ st.markdown(
         text-align: center;
     }}
     .alert-box {{
-        margin-top: 50px; /* Lowered alert message */
+        margin-top: 70px;
         background-color: rgba(255, 0, 0, 0.9);
         color: white;
         padding: 10px;
@@ -78,7 +77,7 @@ st.markdown(
         margin-right: auto;
     }}
     .normal-alert {{
-        margin-top: 50px;
+        margin-top: 70px;
         background-color: rgba(0, 128, 0, 0.9);
         color: white;
         padding: 10px;
@@ -121,31 +120,13 @@ def classify_risk(value):
 # Function to handle vehicle responses
 def handle_responses(status, responses_dict, situation):
     dynamic_messages = {
-        "Stress": {
-            "Moderate": "You seem a bit tense. Take a deep breath and stay focused.",
-            "High": "High stress detected! It's time to minimize distractions.",
-            "Critical": "WARNING! Extreme stress detected. Please stop safely and relax."
-        },
-        "Fatigue": {
-            "Moderate": "Feeling a bit tired? Stretch when possible.",
-            "High": "High fatigue detected! A break is necessary.",
-            "Critical": "CRITICAL FATIGUE! You must stop immediately for safety."
-        },
-        "Health Crisis": {
-            "Moderate": "Minor irregularities detected. Stay cautious.",
-            "High": "Health concern detected! Seek attention soon.",
-            "Critical": "EMERGENCY! Contacting emergency services now."
-        }
+        "Moderate": "Moderate level detected. Please be cautious.",
+        "High": "High level detected! Take action immediately.",
+        "Critical": "CRITICAL! Immediate intervention required."
     }
     if status != "Normal":
         for response in responses_dict.get(status, []):
-            if response == "Send Notification":
-                message = dynamic_messages[situation].get(status, "All systems normal.")
-                st.markdown(f'<div class="alert-box">{situation} - {status}: {message}</div>', unsafe_allow_html=True)
-            else:
-                st.markdown(f'<div class="alert-box">{response} activated due to {situation} condition: {status}</div>', unsafe_allow_html=True)
-    else:
-        st.markdown(f'<div class="normal-alert">Normal Condition: All systems are stable.</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="alert-box">{situation} - {status}: {dynamic_messages[status]} | Action: {response}</div>', unsafe_allow_html=True)
 
 # Main loop for real-time simulation
 placeholder = st.empty()
