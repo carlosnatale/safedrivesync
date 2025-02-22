@@ -52,9 +52,9 @@ st.markdown(
         background-attachment: fixed;
         background-color: #3a3a3a;
     }}
-    .data-area {{
+    .data-area {
         position: absolute;
-        top: 80%;
+        margin-top: 15cm;
         left: 30%;
         width: 40%;
         height: auto;
