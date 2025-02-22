@@ -2,19 +2,25 @@ import streamlit as st
 import random
 import time
 from PIL import Image
+import base64
 
-# Load background image
-background = Image.open('infotainment - Copia.png')
+# Function to load and encode the background image
+def get_base64_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode()
+
+# Load and encode background image
+background_base64 = get_base64_image('infotainment - Copia.png')
 
 # Set page configuration
 st.set_page_config(page_title="SafeDrive Sync Simulator", layout="wide")
 
-# CSS styling for background
+# CSS styling for background and messages
 st.markdown(
     f"""
     <style>
     .stApp {{
-        background-image: url('data:image/png;base64,{st.image(background, use_column_width=True)}');
+        background-image: url('data:image/png;base64,{background_base64}');
         background-size: cover;
         background-position: center;
     }}
@@ -30,6 +36,18 @@ st.markdown(
         color: white;
         border-radius: 10px;
         margin-bottom: 10px;
+    }}
+    .alert-box {{
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(255, 0, 0, 0.8);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        font-weight: bold;
+        z-index: 1000;
     }}
     </style>
     """,
@@ -63,16 +81,16 @@ def classify_risk(value):
 
 # Vehicle response settings
 responses = [
-    "No Action", "Send Notification", "Reduce Speed", "Play Calming Music",
+    "Send Notification", "Reduce Speed", "Play Calming Music",
     "Turn On Air Conditioning", "Adjust Seat Position", "Activate Horn",
     "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
 ]
 
 # Sidebar configuration for user response settings
 st.sidebar.title("Vehicle Response Settings")
-stress_response = st.sidebar.selectbox("Stress Response", responses)
-fatigue_response = st.sidebar.selectbox("Fatigue Response", responses)
-health_crisis_response = st.sidebar.selectbox("Health Crisis Response", responses)
+stress_responses = st.sidebar.multiselect("Stress Response", responses)
+fatigue_responses = st.sidebar.multiselect("Fatigue Response", responses)
+health_crisis_responses = st.sidebar.multiselect("Health Crisis Response", responses)
 
 # Display title
 st.markdown('<div class="title">SafeDrive Sync Real-Time Monitoring</div>', unsafe_allow_html=True)
@@ -92,35 +110,35 @@ fatigue_status = classify_risk(biometric_data["Fatigue Risk"])
 health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"])
 
 # Function to handle vehicle responses
-def handle_response(status, response, situation):
-    if response == "No Action":
-        return
-    elif response == "Send Notification":
-        messages = {
-            "Stress": {
-                "Moderate": "Moderate stress detected. Consider taking deep breaths.",
-                "High": "High stress detected! Reduce distractions and focus on the road.",
-                "Critical": "CRITICAL STRESS! Pull over safely and take a break."
-            },
-            "Fatigue": {
-                "Moderate": "Moderate fatigue detected. Consider stretching or stopping soon.",
-                "High": "High fatigue detected! Take a break immediately.",
-                "Critical": "CRITICAL FATIGUE! Your reaction time is dangerously low. Stop now."
-            },
-            "Health Crisis": {
-                "Moderate": "Mild health irregularity detected. Monitor your condition.",
-                "High": "Significant health concern! Consider seeking medical attention.",
-                "Critical": "EMERGENCY! Health crisis detected. Contact emergency services immediately."
-            }
+def handle_responses(status, responses_list, situation):
+    dynamic_messages = {
+        "Stress": {
+            "Moderate": "You seem a bit tense. Take a deep breath and stay focused.",
+            "High": "High stress detected! It's time to minimize distractions.",
+            "Critical": "WARNING! Extreme stress detected. Please stop safely and relax."
+        },
+        "Fatigue": {
+            "Moderate": "Feeling a bit tired? Stretch when possible.",
+            "High": "High fatigue detected! A break is necessary.",
+            "Critical": "CRITICAL FATIGUE! You must stop immediately for safety."
+        },
+        "Health Crisis": {
+            "Moderate": "Minor irregularities detected. Stay cautious.",
+            "High": "Health concern detected! Seek attention soon.",
+            "Critical": "EMERGENCY! Contacting emergency services now."
         }
-        st.warning(messages[situation].get(status, "All normal."))
-    else:
-        st.info(f"{response} activated due to {situation} condition: {status}")
+    }
+    for response in responses_list:
+        if response == "Send Notification":
+            message = dynamic_messages[situation].get(status, "All systems normal.")
+            st.markdown(f'<div class="alert-box">{situation} - {status}: {message}</div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<div class="alert-box">{response} activated due to {situation} condition: {status}</div>', unsafe_allow_html=True)
 
 # Trigger responses
-handle_response(stress_status, stress_response, "Stress")
-handle_response(fatigue_status, fatigue_response, "Fatigue")
-handle_response(health_crisis_status, health_crisis_response, "Health Crisis")
+handle_responses(stress_status, stress_responses, "Stress")
+handle_responses(fatigue_status, fatigue_responses, "Fatigue")
+handle_responses(health_crisis_status, health_crisis_responses, "Health Crisis")
 
 # Footer
 st.markdown("---")
