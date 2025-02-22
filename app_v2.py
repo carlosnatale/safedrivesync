@@ -1,6 +1,7 @@
 import streamlit as st
 import random
 import time
+import pandas as pd
 from PIL import Image
 import base64
 
@@ -40,7 +41,7 @@ health_crisis_responses = {
     "Critical": st.sidebar.multiselect("Health Crisis Response - Critical", responses)
 }
 
-# CSS styling for background and messages
+# CSS styling for background and table display
 st.markdown(
     f"""
     <style>
@@ -51,47 +52,24 @@ st.markdown(
         background-repeat: no-repeat;
         background-attachment: fixed;
     }}
-    .content-area {{
+    .data-area {{
         position: absolute;
-        top: 30%;
+        top: 25%;
         left: 20%;
         width: 60%;
-        height: 40%;
-        background: none;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-    }}
-    .indicator {{
-        padding: 10px;
-        background-color: rgba(0, 0, 0, 0.6);
-        color: white;
-        border-radius: 5px;
-        margin: 5px;
-        font-size: 12px;
-        text-align: center;
-    }}
-    .normal-indicator {{
-        padding: 10px;
-        background-color: rgba(0, 128, 0, 0.6);
-        color: white;
-        border-radius: 5px;
-        margin: 5px;
-        font-size: 12px;
-        text-align: center;
+        height: auto;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 20px;
+        border-radius: 10px;
     }}
     .alert-box {{
-        position: absolute;
-        bottom: 5%;
-        left: 50%;
-        transform: translateX(-50%);
+        margin-top: 20px;
         background-color: rgba(255, 0, 0, 0.9);
         color: white;
         padding: 10px;
         border-radius: 5px;
         font-weight: bold;
-        width: 40%;
+        width: 100%;
         text-align: center;
     }}
     </style>
@@ -156,12 +134,11 @@ placeholder = st.empty()
 
 for _ in range(100):  # Simulate 100 updates
     biometric_data = generate_biometric_data()
+    data_table = pd.DataFrame([biometric_data])
     with placeholder.container():
-        st.markdown('<div class="content-area">', unsafe_allow_html=True)
-        for key, value in biometric_data.items():
-            status = classify_risk(value) if key in ["Stress Level", "Fatigue Risk", "Health Crisis Risk"] else "Normal"
-            style_class = "normal-indicator" if status == "Normal" else "indicator"
-            st.markdown(f'<div class="{style_class}">{key}: {value}</div>', unsafe_allow_html=True)
+        st.markdown('<div class="data-area">', unsafe_allow_html=True)
+        st.subheader("Real-Time Driver Health Data")
+        st.dataframe(data_table.style.highlight_max(axis=1, color='red').highlight_min(axis=1, color='green'))
         # Check and handle alerts
         stress_status = classify_risk(biometric_data["Stress Level"])
         fatigue_status = classify_risk(biometric_data["Fatigue Risk"])
