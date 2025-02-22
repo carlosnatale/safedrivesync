@@ -150,3 +150,24 @@ def handle_responses(status, responses_dict, situation):
                 st.markdown(f'<div class="alert-box">{situation} - {status}: {message}</div>', unsafe_allow_html=True)
             else:
                 st.markdown(f'<div class="alert-box">{response} activated due to {situation} condition: {status}</div>', unsafe_allow_html=True)
+
+# Main loop for real-time simulation
+placeholder = st.empty()
+
+for _ in range(100):  # Simulate 100 updates
+    biometric_data = generate_biometric_data()
+    with placeholder.container():
+        st.markdown('<div class="content-area">', unsafe_allow_html=True)
+        for key, value in biometric_data.items():
+            status = classify_risk(value) if key in ["Stress Level", "Fatigue Risk", "Health Crisis Risk"] else "Normal"
+            style_class = "normal-indicator" if status == "Normal" else "indicator"
+            st.markdown(f'<div class="{style_class}">{key}: {value}</div>', unsafe_allow_html=True)
+        # Check and handle alerts
+        stress_status = classify_risk(biometric_data["Stress Level"])
+        fatigue_status = classify_risk(biometric_data["Fatigue Risk"])
+        health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"])
+        handle_responses(stress_status, stress_responses, "Stress")
+        handle_responses(fatigue_status, fatigue_responses, "Fatigue")
+        handle_responses(health_crisis_status, health_crisis_responses, "Health Crisis")
+        st.markdown('</div>', unsafe_allow_html=True)
+    time.sleep(2)  # Update every 2 seconds
