@@ -15,6 +15,31 @@ background_base64 = get_base64_image('infotainment - Copia.png')
 # Set page configuration
 st.set_page_config(page_title="SafeDrive Sync Simulator", layout="wide")
 
+# Define response options
+responses = [
+    "Send Notification", "Reduce Speed", "Play Calming Music",
+    "Turn On Air Conditioning", "Adjust Seat Position", "Activate Horn",
+    "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
+]
+
+# Sidebar response configuration
+st.sidebar.title("Vehicle Response Settings")
+stress_responses = {
+    "Moderate": st.sidebar.multiselect("Stress Response - Moderate", responses),
+    "High": st.sidebar.multiselect("Stress Response - High", responses),
+    "Critical": st.sidebar.multiselect("Stress Response - Critical", responses)
+}
+fatigue_responses = {
+    "Moderate": st.sidebar.multiselect("Fatigue Response - Moderate", responses),
+    "High": st.sidebar.multiselect("Fatigue Response - High", responses),
+    "Critical": st.sidebar.multiselect("Fatigue Response - Critical", responses)
+}
+health_crisis_responses = {
+    "Moderate": st.sidebar.multiselect("Health Crisis Response - Moderate", responses),
+    "High": st.sidebar.multiselect("Health Crisis Response - High", responses),
+    "Critical": st.sidebar.multiselect("Health Crisis Response - Critical", responses)
+}
+
 # CSS styling for background and messages
 st.markdown(
     f"""
@@ -125,34 +150,3 @@ def handle_responses(status, responses_dict, situation):
                 st.markdown(f'<div class="alert-box">{situation} - {status}: {message}</div>', unsafe_allow_html=True)
             else:
                 st.markdown(f'<div class="alert-box">{response} activated due to {situation} condition: {status}</div>', unsafe_allow_html=True)
-
-# Real-time data simulation loop
-placeholder = st.empty()
-
-for _ in range(100):  # Simulates 100 updates
-    biometric_data = generate_biometric_data()
-    
-    with placeholder.container():
-        st.markdown('<div class="content-area">', unsafe_allow_html=True)
-        # Display biometric data
-        for key, value in biometric_data.items():
-            status = classify_risk(value) if key in ["Stress Level", "Fatigue Risk", "Health Crisis Risk"] else "Normal"
-            style_class = "normal-indicator" if status == "Normal" else "indicator"
-            st.markdown(f'<div class="{style_class}">{key}: {value}</div>', unsafe_allow_html=True)
-        
-        # Assess situations
-        stress_status = classify_risk(biometric_data["Stress Level"])
-        fatigue_status = classify_risk(biometric_data["Fatigue Risk"])
-        health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"])
-        
-        # Trigger responses
-        handle_responses(stress_status, stress_responses, "Stress")
-        handle_responses(fatigue_status, fatigue_responses, "Fatigue")
-        handle_responses(health_crisis_status, health_crisis_responses, "Health Crisis")
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    time.sleep(2)  # Update every 2 seconds
-
-# Footer
-st.markdown("---")
-st.markdown("**SafeDrive Sync - Real-Time Driver Health Monitoring**")
