@@ -21,8 +21,9 @@ st.markdown(
     <style>
     .stApp {{
         background-image: url('data:image/png;base64,{background_base64}');
-        background-size: cover;
+        background-size: contain;
         background-position: center;
+        background-repeat: no-repeat;
     }}
     .title {{
         text-align: center;
@@ -88,29 +89,30 @@ responses = [
 
 # Sidebar configuration for user response settings
 st.sidebar.title("Vehicle Response Settings")
-stress_responses = st.sidebar.multiselect("Stress Response", responses)
-fatigue_responses = st.sidebar.multiselect("Fatigue Response", responses)
-health_crisis_responses = st.sidebar.multiselect("Health Crisis Response", responses)
+
+stress_responses = {
+    "Moderate": st.sidebar.multiselect("Stress Response - Moderate", responses),
+    "High": st.sidebar.multiselect("Stress Response - High", responses),
+    "Critical": st.sidebar.multiselect("Stress Response - Critical", responses)
+}
+
+fatigue_responses = {
+    "Moderate": st.sidebar.multiselect("Fatigue Response - Moderate", responses),
+    "High": st.sidebar.multiselect("Fatigue Response - High", responses),
+    "Critical": st.sidebar.multiselect("Fatigue Response - Critical", responses)
+}
+
+health_crisis_responses = {
+    "Moderate": st.sidebar.multiselect("Health Crisis Response - Moderate", responses),
+    "High": st.sidebar.multiselect("Health Crisis Response - High", responses),
+    "Critical": st.sidebar.multiselect("Health Crisis Response - Critical", responses)
+}
 
 # Display title
 st.markdown('<div class="title">SafeDrive Sync Real-Time Monitoring</div>', unsafe_allow_html=True)
 
-# Real-time data simulation loop
-biometric_data = generate_biometric_data()
-
-# Display biometric data
-st.markdown("### Biometric Data")
-cols = st.columns(3)
-for i, (key, value) in enumerate(biometric_data.items()):
-    cols[i % 3].markdown(f'<div class="indicator">{key}: {value}</div>', unsafe_allow_html=True)
-
-# Assess situations
-stress_status = classify_risk(biometric_data["Stress Level"])
-fatigue_status = classify_risk(biometric_data["Fatigue Risk"])
-health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"])
-
 # Function to handle vehicle responses
-def handle_responses(status, responses_list, situation):
+def handle_responses(status, responses_dict, situation):
     dynamic_messages = {
         "Stress": {
             "Moderate": "You seem a bit tense. Take a deep breath and stay focused.",
@@ -128,17 +130,37 @@ def handle_responses(status, responses_list, situation):
             "Critical": "EMERGENCY! Contacting emergency services now."
         }
     }
-    for response in responses_list:
+    for response in responses_dict.get(status, []):
         if response == "Send Notification":
             message = dynamic_messages[situation].get(status, "All systems normal.")
             st.markdown(f'<div class="alert-box">{situation} - {status}: {message}</div>', unsafe_allow_html=True)
         else:
             st.markdown(f'<div class="alert-box">{response} activated due to {situation} condition: {status}</div>', unsafe_allow_html=True)
 
-# Trigger responses
-handle_responses(stress_status, stress_responses, "Stress")
-handle_responses(fatigue_status, fatigue_responses, "Fatigue")
-handle_responses(health_crisis_status, health_crisis_responses, "Health Crisis")
+# Real-time data simulation loop
+placeholder = st.empty()
+
+for _ in range(100):  # Simulates 100 updates
+    biometric_data = generate_biometric_data()
+    
+    with placeholder.container():
+        # Display biometric data
+        st.markdown("### Biometric Data")
+        cols = st.columns(3)
+        for i, (key, value) in enumerate(biometric_data.items()):
+            cols[i % 3].markdown(f'<div class="indicator">{key}: {value}</div>', unsafe_allow_html=True)
+        
+        # Assess situations
+        stress_status = classify_risk(biometric_data["Stress Level"])
+        fatigue_status = classify_risk(biometric_data["Fatigue Risk"])
+        health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"])
+        
+        # Trigger responses
+        handle_responses(stress_status, stress_responses, "Stress")
+        handle_responses(fatigue_status, fatigue_responses, "Fatigue")
+        handle_responses(health_crisis_status, health_crisis_responses, "Health Crisis")
+    
+    time.sleep(2)  # Update every 2 seconds
 
 # Footer
 st.markdown("---")
