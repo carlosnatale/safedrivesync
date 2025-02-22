@@ -51,19 +51,20 @@ st.markdown(
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
+        background-color: #3a3a3a;
     }}
     .data-area {{
         position: absolute;
-        top: 25%;
-        left: 20%;
-        width: 60%;
+        top: 35%;
+        left: 25%;
+        width: 50%;
         height: auto;
-        background: rgba(0, 0, 0, 0.6);
+        background: rgba(58, 58, 58, 0.8);
         padding: 20px;
         border-radius: 10px;
     }}
     .alert-box {{
-        margin-top: 20px;
+        margin-top: 10px;
         background-color: rgba(255, 0, 0, 0.9);
         color: white;
         padding: 10px;
@@ -71,6 +72,7 @@ st.markdown(
         font-weight: bold;
         width: 100%;
         text-align: center;
+        overflow-wrap: break-word;
     }}
     </style>
     """,
