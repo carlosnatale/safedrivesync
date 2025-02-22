@@ -147,4 +147,3 @@ for _ in range(100):  # Simulate 100 updates
         handle_responses(health_crisis_status, health_crisis_responses, "Health Crisis")
         st.markdown('</div>', unsafe_allow_html=True)
     time.sleep(10)  # Update every 10 seconds
-
