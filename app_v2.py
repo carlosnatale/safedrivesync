@@ -1,83 +1,120 @@
 import streamlit as st
-import random
 import time
-import pandas as pd
-from PIL import Image
+import random
 import base64
 
-# Function to load and encode the background image
-def get_base64_image(image_path):
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode()
+# Configuração inicial
+st.set_page_config(layout="wide")
 
-# Load and encode background image
-background_base64 = get_base64_image('infotainment - Copia.png')
+# Função para carregar imagem como Base64
+def get_base64(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
 
-# Set page configuration
-st.set_page_config(page_title="SafeDrive Sync Simulator", layout="wide")
-
-# Define response options
-responses = [
-    "Send Notification", "Reduce Speed", "Play Calming Music",
-    "Turn On Air Conditioning", "Adjust Seat Position", "Activate Horn",
-    "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
-]
-
-# Sidebar response configuration
-st.sidebar.title("Vehicle Response Settings")
-stress_responses = {
-    "Moderate": st.sidebar.multiselect("Stress Response - Moderate", responses),
-    "High": st.sidebar.multiselect("Stress Response - High", responses),
-    "Critical": st.sidebar.multiselect("Stress Response - Critical", responses)
-}
-fatigue_responses = {
-    "Moderate": st.sidebar.multiselect("Fatigue Response - Moderate", responses),
-    "High": st.sidebar.multiselect("Fatigue Response - High", responses),
-    "Critical": st.sidebar.multiselect("Fatigue Response - Critical", responses)
-}
-health_crisis_responses = {
-    "Moderate": st.sidebar.multiselect("Health Crisis Response - Moderate", responses),
-    "High": st.sidebar.multiselect("Health Crisis Response - High", responses),
-    "Critical": st.sidebar.multiselect("Health Crisis Response - Critical", responses)
-}
-
-# CSS styling for background and table display
-st.markdown(
-    f"""
+# Carregar CSS personalizado
+def local_css():
+    bg_image = get_base64("infotainment - Copia.png")
+    css = f'''
     <style>
     .stApp {{
-        background-image: url('data:image/png;base64,{background_base64}');
-        background-size: 70%;
+        background-image: url("data:image/png;base64,{bg_image}");
+        background-size: cover;
         background-position: center;
-        background-repeat: no-repeat;
         background-attachment: fixed;
-        background-color: #3a3a3a;
     }}
-    .data-area {{
-        position: absolute;
-        top: 60%; /* Adjusted positioning lower */
-        left: 28%; /* Adjusted to the right */
-        width: 45%;
-        height: auto;
-        background: rgba(58, 58, 58, 0.9);
-        padding: 20px;
+    .stAlert, .stMarkdown {{
+        background: rgba(255, 255, 255, 0.9) !important;
+        border-radius: 15px;
+        padding: 15px;
+        margin: 10px 0;
+    }}
+    .metric-box {{
+        background: rgba(255, 255, 255, 0.85);
+        padding: 15px;
         border-radius: 10px;
-        text-align: center;
-    }}
-    .alert-box {{
-        margin-top: 20px;
-        background-color: rgba(255, 0, 0, 0.9);
-        color: white;
-        padding: 10px;
-        border-radius: 5px;
-        font-weight: bold;
-        width: 60%;
-        text-align: center;
-        overflow-wrap: break-word;
-        margin-left: auto;
-        margin-right: auto;
+        margin: 10px 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }}
     </style>
-    """,
-    unsafe_allow_html=True
-)
+    '''
+    st.markdown(css, unsafe_allow_html=True)
+
+# ... (mantenha aqui as outras funções originais)
+# Gerar dados biométricos
+def generate_biometrics():
+    return {
+        "Heart Rate": random.randint(60, 180),
+        "HRV": random.randint(20, 200),
+        "SpO2": random.randint(85, 100),
+        "Blood Pressure": f"{random.randint(90, 180)}/{random.randint(60, 120)}",
+        "Blood Sugar": random.randint(70, 300),
+        "Motion Intensity": random.choice(["Low", "Moderate", "High"]),
+    }
+
+# Determinar status de risco
+def calculate_risk(metrics):
+    risks = {
+        "Stress": "Normal",
+        "Fatigue": "Normal",
+        "Health Crisis": "Normal"
+    }
+    
+    # Lógica de determinação de risco
+    if metrics["Heart Rate"] > 120:
+        risks["Stress"] = "High" if random.random() > 0.5 else "Moderate"
+    if metrics["Blood Sugar"] > 200:
+        risks["Health Crisis"] = "Moderate"
+    if metrics["SpO2"] < 92:
+        risks["Health Crisis"] = "Critical" if metrics["SpO2"] < 88 else "High"
+    
+    return risks
+
+# Interface principal
+def main():
+    local_css()  # Chamada dentro da função main
+    st.title("SafeDrive Sync Prototype")
+    
+    # Colunas para layout
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        st.header("Real-time Biometric Monitoring")
+        metrics = generate_biometrics()
+        
+        # Exibir métricas
+        metric_style = "padding: 15px; border-radius: 10px; background: rgba(255, 255, 255, 0.9); margin: 10px 0;"
+        for k, v in metrics.items():
+            st.markdown(f'<div style="{metric_style}"><strong>{k}:</strong> {v}</div>', unsafe_allow_html=True)
+        
+        # Atualização automática
+        time.sleep(1.5)
+        st.experimental_rerun()
+    
+    with col2:
+        st.header("Vehicle Response Settings")
+        
+        # Configurações de resposta
+        actions = st.multiselect(
+            "Select vehicle responses:",
+            ["No Action", "Send Notification", "Reduce Speed", "Play Calming Music",
+             "Turn On Air Conditioning", "Adjust Seat Position", "Activate Horn",
+             "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"]
+        )
+        
+        # Determinar riscos
+        risks = calculate_risk(metrics)
+        
+        # Exibir alertas e ações
+        for condition, level in risks.items():
+            if level != "Normal":
+                if "Send Notification" in actions:
+                    st.error(MESSAGES[condition][level])
+                if "Play Calming Music" in actions:
+                    st.success("Playing calming music through vehicle speakers")
+                if "Turn On Air Conditioning" in actions:
+                    st.info("Adjusting AC to optimal temperature (22°C)")
+                if "Activate Autopilot" in actions:
+                    st.warning("Activating emergency autopilot system")
+
+if __name__ == "__main__":
+    main()  # Tudo dentro do bloco principal
