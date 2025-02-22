@@ -47,7 +47,7 @@ st.markdown(
     <style>
     .stApp {{
         background-image: url('data:image/png;base64,{background_base64}');
-        background-size: 50%;
+        background-size: 80%;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
@@ -55,12 +55,12 @@ st.markdown(
     }}
     .data-area {{
         position: absolute;
-        top: 70%; /* Lowered further */
-        left: 25%; /* Moved 5 cm to the right */
-        width: 50%;
+        top: 65%; /* Adjusted positioning lower */
+        left: 30%; /* Adjusted to the right */
+        width: 40%;
         height: auto;
         background: rgba(58, 58, 58, 0.9);
-        padding: 15px;
+        padding: 20px;
         border-radius: 10px;
         text-align: center;
     }}
