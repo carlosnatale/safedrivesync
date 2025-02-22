@@ -46,10 +46,18 @@ st.markdown(
     <style>
     .stApp {{
         background-image: url('data:image/png;base64,{background_base64}');
-        background-size: 90%;
+        background-size: 70%;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
+    }}
+    .content-area {{
+        position: absolute;
+        top: 20%;
+        left: 10%;
+        width: 80%;
+        height: 60%;
+        background: none;
     }}
     .title {{
         text-align: center;
@@ -76,7 +84,7 @@ st.markdown(
     }}
     .alert-box {{
         position: fixed;
-        top: 10%;
+        top: 15%;
         left: 50%;
         transform: translateX(-50%);
         background-color: rgba(255, 0, 0, 0.9);
@@ -152,7 +160,7 @@ for _ in range(100):  # Simulates 100 updates
     biometric_data = generate_biometric_data()
     
     with placeholder.container():
-        st.markdown('<div class="main-content">', unsafe_allow_html=True)
+        st.markdown('<div class="content-area">', unsafe_allow_html=True)
         # Display biometric data
         st.markdown("### Biometric Data")
         cols = st.columns(3)
