@@ -47,7 +47,7 @@ st.markdown(
     <style>
     .stApp {{
         background-image: url('data:image/png;base64,{background_base64}');
-        background-size: 60%;
+        background-size: 50%;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
@@ -55,23 +55,23 @@ st.markdown(
     }}
     .data-area {{
         position: absolute;
-        top: 45%;
+        top: 50%;
         left: 20%;
         width: 60%;
         height: auto;
-        background: rgba(58, 58, 58, 0.8);
-        padding: 20px;
+        background: rgba(58, 58, 58, 0.9);
+        padding: 15px;
         border-radius: 10px;
         text-align: center;
     }}
     .alert-box {{
-        margin-top: 20px;
+        margin-top: 10px;
         background-color: rgba(255, 0, 0, 0.9);
         color: white;
         padding: 10px;
         border-radius: 5px;
         font-weight: bold;
-        width: 80%;
+        width: 70%;
         text-align: center;
         overflow-wrap: break-word;
         margin-left: auto;
