@@ -52,9 +52,9 @@ st.markdown(
         background-attachment: fixed;
         background-color: #3a3a3a;
     }}
-    .data-area {{
+    .data-area {
         position: absolute;
-        margin-top: 15cm;
+        margin-top: 20cm; /* Increased by 5cm */
         left: 30%;
         width: 40%;
         height: auto;
@@ -137,7 +137,9 @@ for _ in range(100):  # Simulate 100 updates
     with placeholder.container():
         st.markdown('<div class="data-area">', unsafe_allow_html=True)
         st.subheader("Real-Time Driver Health Data")
+        st.markdown('<div style="margin-top: 5cm;">', unsafe_allow_html=True)
         st.dataframe(data_table.style.highlight_max(axis=1, color='red').highlight_min(axis=1, color='green'))
+        st.markdown('</div>', unsafe_allow_html=True)
         # Check and handle alerts
         stress_status = classify_risk(biometric_data["Stress Level"])
         fatigue_status = classify_risk(biometric_data["Fatigue Risk"])
