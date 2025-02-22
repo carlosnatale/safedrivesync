@@ -1,52 +1,83 @@
 import streamlit as st
-import time
 import random
+import time
+import pandas as pd
+from PIL import Image
 import base64
 
-# Configuração inicial
-st.set_page_config(layout="wide")
+# Function to load and encode the background image
+def get_base64_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode()
 
-# Função para carregar imagem como Base64
-def get_base64(image_path):
-    with open(image_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode()
+# Load and encode background image
+background_base64 = get_base64_image('infotainment - Copia.png')
 
-# Carregar CSS personalizado
-def local_css():
-    bg_image = get_base64("infotainment - Copia.png")
-    css = f'''
+# Set page configuration
+st.set_page_config(page_title="SafeDrive Sync Simulator", layout="wide")
+
+# Define response options
+responses = [
+    "Send Notification", "Reduce Speed", "Play Calming Music",
+    "Turn On Air Conditioning", "Adjust Seat Position", "Activate Horn",
+    "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
+]
+
+# Sidebar response configuration
+st.sidebar.title("Vehicle Response Settings")
+stress_responses = {
+    "Moderate": st.sidebar.multiselect("Stress Response - Moderate", responses),
+    "High": st.sidebar.multiselect("Stress Response - High", responses),
+    "Critical": st.sidebar.multiselect("Stress Response - Critical", responses)
+}
+fatigue_responses = {
+    "Moderate": st.sidebar.multiselect("Fatigue Response - Moderate", responses),
+    "High": st.sidebar.multiselect("Fatigue Response - High", responses),
+    "Critical": st.sidebar.multiselect("Fatigue Response - Critical", responses)
+}
+health_crisis_responses = {
+    "Moderate": st.sidebar.multiselect("Health Crisis Response - Moderate", responses),
+    "High": st.sidebar.multiselect("Health Crisis Response - High", responses),
+    "Critical": st.sidebar.multiselect("Health Crisis Response - Critical", responses)
+}
+
+# CSS styling for background and table display
+st.markdown(
+    f"""
     <style>
     .stApp {{
-        background-image: url("data:image/png;base64,{bg_image}");
-        background-size: cover;
+        background-image: url('data:image/png;base64,{background_base64}');
+        background-size: 70%;
         background-position: center;
+        background-repeat: no-repeat;
         background-attachment: fixed;
+        background-color: #3a3a3a;
     }}
-    .stAlert, .stMarkdown {{
-        background: rgba(255, 255, 255, 0.9) !important;
-        border-radius: 15px;
-        padding: 15px;
-        margin: 10px 0;
-    }}
-    .metric-box {{
-        background: rgba(255, 255, 255, 0.85);
-        padding: 15px;
+    .data-area {{
+        position: absolute;
+        top: 60%; /* Adjusted positioning lower */
+        left: 28%; /* Adjusted to the right */
+        width: 45%;
+        height: auto;
+        background: rgba(58, 58, 58, 0.9);
+        padding: 20px;
         border-radius: 10px;
-        margin: 10px 0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-align: center;
+    }}
+    .alert-box {{
+        margin-top: 20px;
+        background-color: rgba(255, 0, 0, 0.9);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        width: 60%;
+        text-align: center;
+        overflow-wrap: break-word;
+        margin-left: auto;
+        margin-right: auto;
     }}
     </style>
-    '''
-    st.markdown(css, unsafe_allow_html=True)
-
-# ... (o restante do código permanece igual ao anterior)
-# Manter todas as funções e lógica originais
-
-local_css()  # Aplicar o estilo personalizado
-
-# Interface principal (manter igual)
-def main():
-    # ... (código da interface mantido igual)
-
-if __name__ == "__main__":
-    main()
+    """,
+    unsafe_allow_html=True
+)
