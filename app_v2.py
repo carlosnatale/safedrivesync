@@ -15,6 +15,31 @@ background_base64 = get_base64_image('infotainment - Copia.png')
 # Set page configuration
 st.set_page_config(page_title="SafeDrive Sync Simulator", layout="wide")
 
+# Define response options globally
+responses = [
+    "Send Notification", "Reduce Speed", "Play Calming Music",
+    "Turn On Air Conditioning", "Adjust Seat Position", "Activate Horn",
+    "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
+]
+
+# Sidebar response configuration
+st.sidebar.title("Vehicle Response Settings")
+stress_responses = {
+    "Moderate": st.sidebar.multiselect("Stress Response - Moderate", responses),
+    "High": st.sidebar.multiselect("Stress Response - High", responses),
+    "Critical": st.sidebar.multiselect("Stress Response - Critical", responses)
+}
+fatigue_responses = {
+    "Moderate": st.sidebar.multiselect("Fatigue Response - Moderate", responses),
+    "High": st.sidebar.multiselect("Fatigue Response - High", responses),
+    "Critical": st.sidebar.multiselect("Fatigue Response - Critical", responses)
+}
+health_crisis_responses = {
+    "Moderate": st.sidebar.multiselect("Health Crisis Response - Moderate", responses),
+    "High": st.sidebar.multiselect("Health Crisis Response - High", responses),
+    "Critical": st.sidebar.multiselect("Health Crisis Response - Critical", responses)
+}
+
 # CSS styling for background and messages
 st.markdown(
     f"""
