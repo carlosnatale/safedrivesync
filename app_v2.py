@@ -134,7 +134,8 @@ placeholder = st.empty()
 
 for _ in range(100):  # Simulate 100 updates
     biometric_data = generate_biometric_data()
-    data_table = pd.DataFrame([biometric_data])
+    numeric_data = {k: v for k, v in biometric_data.items() if isinstance(v, (int, float))}
+    data_table = pd.DataFrame([numeric_data])
     with placeholder.container():
         st.markdown('<div class="data-area">', unsafe_allow_html=True)
         st.subheader("Real-Time Driver Health Data")
