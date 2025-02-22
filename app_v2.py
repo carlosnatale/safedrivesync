@@ -15,84 +15,57 @@ background_base64 = get_base64_image('infotainment - Copia.png')
 # Set page configuration
 st.set_page_config(page_title="SafeDrive Sync Simulator", layout="wide")
 
-# Define response options globally
-responses = [
-    "Send Notification", "Reduce Speed", "Play Calming Music",
-    "Turn On Air Conditioning", "Adjust Seat Position", "Activate Horn",
-    "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
-]
-
-# Sidebar response configuration
-st.sidebar.title("Vehicle Response Settings")
-stress_responses = {
-    "Moderate": st.sidebar.multiselect("Stress Response - Moderate", responses),
-    "High": st.sidebar.multiselect("Stress Response - High", responses),
-    "Critical": st.sidebar.multiselect("Stress Response - Critical", responses)
-}
-fatigue_responses = {
-    "Moderate": st.sidebar.multiselect("Fatigue Response - Moderate", responses),
-    "High": st.sidebar.multiselect("Fatigue Response - High", responses),
-    "Critical": st.sidebar.multiselect("Fatigue Response - Critical", responses)
-}
-health_crisis_responses = {
-    "Moderate": st.sidebar.multiselect("Health Crisis Response - Moderate", responses),
-    "High": st.sidebar.multiselect("Health Crisis Response - High", responses),
-    "Critical": st.sidebar.multiselect("Health Crisis Response - Critical", responses)
-}
-
 # CSS styling for background and messages
 st.markdown(
     f"""
     <style>
     .stApp {{
         background-image: url('data:image/png;base64,{background_base64}');
-        background-size: 70%;
+        background-size: 60%;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
     }}
     .content-area {{
         position: absolute;
-        top: 20%;
-        left: 10%;
-        width: 80%;
-        height: 60%;
+        top: 30%;
+        left: 20%;
+        width: 60%;
+        height: 40%;
         background: none;
-    }}
-    .title {{
-        text-align: center;
-        font-size: 36px;
-        font-weight: bold;
-        color: white;
-        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
     }}
     .indicator {{
-        padding: 15px;
-        background-color: rgba(0, 0, 0, 0.7);
+        padding: 10px;
+        background-color: rgba(0, 0, 0, 0.6);
         color: white;
-        border-radius: 10px;
+        border-radius: 5px;
         margin: 5px;
+        font-size: 12px;
         text-align: center;
     }}
     .normal-indicator {{
-        padding: 15px;
-        background-color: rgba(0, 128, 0, 0.7);
+        padding: 10px;
+        background-color: rgba(0, 128, 0, 0.6);
         color: white;
-        border-radius: 10px;
+        border-radius: 5px;
         margin: 5px;
+        font-size: 12px;
         text-align: center;
     }}
     .alert-box {{
-        position: fixed;
-        top: 15%;
+        position: absolute;
+        bottom: 5%;
         left: 50%;
         transform: translateX(-50%);
         background-color: rgba(255, 0, 0, 0.9);
         color: white;
-        padding: 15px;
-        border-radius: 10px;
+        padding: 10px;
+        border-radius: 5px;
         font-weight: bold;
-        z-index: 1000;
         width: 40%;
         text-align: center;
     }}
@@ -162,12 +135,10 @@ for _ in range(100):  # Simulates 100 updates
     with placeholder.container():
         st.markdown('<div class="content-area">', unsafe_allow_html=True)
         # Display biometric data
-        st.markdown("### Biometric Data")
-        cols = st.columns(3)
-        for i, (key, value) in enumerate(biometric_data.items()):
+        for key, value in biometric_data.items():
             status = classify_risk(value) if key in ["Stress Level", "Fatigue Risk", "Health Crisis Risk"] else "Normal"
             style_class = "normal-indicator" if status == "Normal" else "indicator"
-            cols[i % 3].markdown(f'<div class="{style_class}">{key}: {value}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="{style_class}">{key}: {value}</div>', unsafe_allow_html=True)
         
         # Assess situations
         stress_status = classify_risk(biometric_data["Stress Level"])
