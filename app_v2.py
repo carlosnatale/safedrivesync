@@ -21,7 +21,7 @@ st.markdown(
     <style>
     .stApp {{
         background-image: url('data:image/png;base64,{background_base64}');
-        background-size: contain;
+        background-size: 80%;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
@@ -41,17 +41,17 @@ st.markdown(
         margin-bottom: 10px;
     }}
     .alert-box {{
-        position: absolute;
-        top: 10%;
+        position: fixed;
+        top: 5%;
         left: 50%;
         transform: translateX(-50%);
         background-color: rgba(255, 0, 0, 0.9);
         color: white;
-        padding: 20px;
+        padding: 15px;
         border-radius: 10px;
         font-weight: bold;
         z-index: 1000;
-        width: 40%;
+        width: 30%;
         text-align: center;
     }}
     .sidebar .sidebar-content {{
