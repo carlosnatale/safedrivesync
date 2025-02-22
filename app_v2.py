@@ -54,7 +54,7 @@ st.markdown(
     }}
     .data-area {{
         position: absolute;
-        top: 65%;
+        top: 80%;
         left: 30%;
         width: 40%;
         height: auto;
