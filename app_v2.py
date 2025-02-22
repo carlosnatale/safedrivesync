@@ -4,7 +4,7 @@ import time
 from PIL import Image
 
 # Load background image
-background = Image.open('/mnt/data/infotainment - Copia.png')
+background = Image.open('infotainment - Copia.png')
 
 # Set page configuration
 st.set_page_config(page_title="SafeDrive Sync Simulator", layout="wide")
