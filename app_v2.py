@@ -16,31 +16,6 @@ background_base64 = get_base64_image('infotainment - Copia.png')
 # Set page configuration
 st.set_page_config(page_title="SafeDrive Sync Simulator", layout="wide")
 
-# Define response options
-responses = [
-    "Send Notification", "Reduce Speed", "Play Calming Music",
-    "Turn On Air Conditioning", "Adjust Seat Position", "Activate Horn",
-    "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
-]
-
-# Sidebar response configuration
-st.sidebar.title("Vehicle Response Settings")
-stress_responses = {
-    "Moderate": st.sidebar.multiselect("Stress Response - Moderate", responses),
-    "High": st.sidebar.multiselect("Stress Response - High", responses),
-    "Critical": st.sidebar.multiselect("Stress Response - Critical", responses)
-}
-fatigue_responses = {
-    "Moderate": st.sidebar.multiselect("Fatigue Response - Moderate", responses),
-    "High": st.sidebar.multiselect("Fatigue Response - High", responses),
-    "Critical": st.sidebar.multiselect("Fatigue Response - Critical", responses)
-}
-health_crisis_responses = {
-    "Moderate": st.sidebar.multiselect("Health Crisis Response - Moderate", responses),
-    "High": st.sidebar.multiselect("Health Crisis Response - High", responses),
-    "Critical": st.sidebar.multiselect("Health Crisis Response - Critical", responses)
-}
-
 # CSS styling for background and table display
 st.markdown(
     f"""
@@ -55,7 +30,7 @@ st.markdown(
     }}
     .data-area {{
         position: absolute;
-        top: 45%; /* Lowered an additional 10% */
+        top: 65%;
         left: 30%;
         width: 40%;
         height: auto;
@@ -65,7 +40,7 @@ st.markdown(
         text-align: center;
     }}
     .alert-box {{
-        margin-top: 50px; /* Lowered alert message */
+        margin-top: 70px;
         background-color: rgba(255, 0, 0, 0.9);
         color: white;
         padding: 10px;
@@ -78,7 +53,7 @@ st.markdown(
         margin-right: auto;
     }}
     .normal-alert {{
-        margin-top: 50px;
+        margin-top: 70px;
         background-color: rgba(0, 128, 0, 0.9);
         color: white;
         padding: 10px;
@@ -119,7 +94,7 @@ def classify_risk(value):
         return "Critical"
 
 # Function to handle vehicle responses
-def handle_responses(status, responses_dict, situation):
+def handle_responses(stress_status, fatigue_status, health_crisis_status):
     dynamic_messages = {
         "Stress": {
             "Moderate": "You seem a bit tense. Take a deep breath and stay focused.",
@@ -137,15 +112,13 @@ def handle_responses(status, responses_dict, situation):
             "Critical": "EMERGENCY! Contacting emergency services now."
         }
     }
-    if status != "Normal":
-        for response in responses_dict.get(status, []):
-            if response == "Send Notification":
-                message = dynamic_messages[situation].get(status, "All systems normal.")
-                st.markdown(f'<div class="alert-box">{situation} - {status}: {message}</div>', unsafe_allow_html=True)
-            else:
-                st.markdown(f'<div class="alert-box">{response} activated due to {situation} condition: {status}</div>', unsafe_allow_html=True)
-    else:
+    if stress_status == "Normal" and fatigue_status == "Normal" and health_crisis_status == "Normal":
         st.markdown(f'<div class="normal-alert">Normal Condition: All systems are stable.</div>', unsafe_allow_html=True)
+    else:
+        for situation, status in zip(["Stress", "Fatigue", "Health Crisis"], [stress_status, fatigue_status, health_crisis_status]):
+            if status != "Normal":
+                message = dynamic_messages[situation][status]
+                st.markdown(f'<div class="alert-box">{situation} - {status}: {message}</div>', unsafe_allow_html=True)
 
 # Main loop for real-time simulation
 placeholder = st.empty()
@@ -161,8 +134,6 @@ for _ in range(100):  # Simulate 100 updates
         stress_status = classify_risk(biometric_data["Stress Level"])
         fatigue_status = classify_risk(biometric_data["Fatigue Risk"])
         health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"])
-        handle_responses(stress_status, stress_responses, "Stress")
-        handle_responses(fatigue_status, fatigue_responses, "Fatigue")
-        handle_responses(health_crisis_status, health_crisis_responses, "Health Crisis")
+        handle_responses(stress_status, fatigue_status, health_crisis_status)
         st.markdown('</div>', unsafe_allow_html=True)
     time.sleep(10)  # Update every 10 seconds
