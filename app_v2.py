@@ -55,8 +55,8 @@ st.markdown(
     }}
     .data-area {{
         position: absolute;
-        top: 55%; /* Adjusted positioning lower */
-        left: 30%; /* Adjusted to center horizontally */
+        top: 65%; /* Lowered by additional 10% */
+        left: 30%;
         width: 40%;
         height: auto;
         background: rgba(58, 58, 58, 0.9);
@@ -65,7 +65,7 @@ st.markdown(
         text-align: center;
     }}
     .alert-box {{
-        margin-top: 10px;
+        margin-top: 20px; /* Increased spacing below data */
         background-color: rgba(255, 0, 0, 0.9);
         color: white;
         padding: 10px;
@@ -81,74 +81,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-# Function to generate simulated biometric data
-def generate_biometric_data():
-    return {
-        "Heart Rate (bpm)": random.randint(60, 140),
-        "HRV (ms)": random.randint(20, 100),
-        "SpO2 (%)": random.randint(85, 100),
-        "Blood Sugar (mg/dL)": random.randint(70, 180),
-        "Motion Intensity": random.randint(0, 10),
-        "Stress Level": random.randint(0, 100),
-        "Fatigue Risk": random.randint(0, 100),
-        "Health Crisis Risk": random.randint(0, 100)
-    }
-
-# Function to classify conditions
-def classify_risk(value):
-    if value < 25:
-        return "Normal"
-    elif value < 50:
-        return "Moderate"
-    elif value < 75:
-        return "High"
-    else:
-        return "Critical"
-
-# Function to handle vehicle responses
-def handle_responses(status, responses_dict, situation):
-    dynamic_messages = {
-        "Stress": {
-            "Moderate": "You seem a bit tense. Take a deep breath and stay focused.",
-            "High": "High stress detected! It's time to minimize distractions.",
-            "Critical": "WARNING! Extreme stress detected. Please stop safely and relax."
-        },
-        "Fatigue": {
-            "Moderate": "Feeling a bit tired? Stretch when possible.",
-            "High": "High fatigue detected! A break is necessary.",
-            "Critical": "CRITICAL FATIGUE! You must stop immediately for safety."
-        },
-        "Health Crisis": {
-            "Moderate": "Minor irregularities detected. Stay cautious.",
-            "High": "Health concern detected! Seek attention soon.",
-            "Critical": "EMERGENCY! Contacting emergency services now."
-        }
-    }
-    if status != "Normal":
-        for response in responses_dict.get(status, []):
-            if response == "Send Notification":
-                message = dynamic_messages[situation].get(status, "All systems normal.")
-                st.markdown(f'<div class="alert-box">{situation} - {status}: {message}</div>', unsafe_allow_html=True)
-            else:
-                st.markdown(f'<div class="alert-box">{response} activated due to {situation} condition: {status}</div>', unsafe_allow_html=True)
-
-# Main loop for real-time simulation
-placeholder = st.empty()
-
-for _ in range(100):  # Simulate 100 updates
-    biometric_data = generate_biometric_data()
-    data_table = pd.DataFrame([biometric_data])
-    with placeholder.container():
-        st.markdown('<div class="data-area">', unsafe_allow_html=True)
-        st.subheader("Real-Time Driver Health Data")
-        st.dataframe(data_table.style.highlight_max(axis=1, color='red').highlight_min(axis=1, color='green'))
-        # Check and handle alerts
-        stress_status = classify_risk(biometric_data["Stress Level"])
-        fatigue_status = classify_risk(biometric_data["Fatigue Risk"])
-        health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"])
-        handle_responses(stress_status, stress_responses, "Stress")
-        handle_responses(fatigue_status, fatigue_responses, "Fatigue")
-        handle_responses(health_crisis_status, health_crisis_responses, "Health Crisis")
-        st.markdown('</div>', unsafe_allow_html=True)
-    time.sleep(2)  # Update every 2 seconds
