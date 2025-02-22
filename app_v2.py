@@ -55,9 +55,9 @@ st.markdown(
     }}
     .data-area {{
         position: absolute;
-        top: 50%;
-        left: 20%;
-        width: 60%;
+        top: 70%; /* Lowered further */
+        left: 25%; /* Moved 5 cm to the right */
+        width: 50%;
         height: auto;
         background: rgba(58, 58, 58, 0.9);
         padding: 15px;
@@ -65,13 +65,13 @@ st.markdown(
         text-align: center;
     }}
     .alert-box {{
-        margin-top: 10px;
+        margin-top: 20px;
         background-color: rgba(255, 0, 0, 0.9);
         color: white;
         padding: 10px;
         border-radius: 5px;
         font-weight: bold;
-        width: 70%;
+        width: 60%;
         text-align: center;
         overflow-wrap: break-word;
         margin-left: auto;
@@ -153,4 +153,4 @@ for _ in range(100):  # Simulate 100 updates
         handle_responses(fatigue_status, fatigue_responses, "Fatigue")
         handle_responses(health_crisis_status, health_crisis_responses, "Health Crisis")
         st.markdown('</div>', unsafe_allow_html=True)
-    time.sleep(2)  # Update every 2 seconds
+    time.sleep(10)  # Update every 2 seconds
