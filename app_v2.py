@@ -46,7 +46,7 @@ st.markdown(
     <style>
     .stApp {{
         background-image: url('data:image/png;base64,{background_base64}');
-        background-size: contain;
+        background-size: 90%;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
@@ -59,22 +59,24 @@ st.markdown(
         margin-top: 20px;
     }}
     .indicator {{
-        padding: 20px;
+        padding: 15px;
         background-color: rgba(0, 0, 0, 0.7);
         color: white;
         border-radius: 10px;
-        margin-bottom: 10px;
+        margin: 5px;
+        text-align: center;
     }}
     .normal-indicator {{
-        padding: 20px;
+        padding: 15px;
         background-color: rgba(0, 128, 0, 0.7);
         color: white;
         border-radius: 10px;
-        margin-bottom: 10px;
+        margin: 5px;
+        text-align: center;
     }}
     .alert-box {{
         position: fixed;
-        top: 5%;
+        top: 10%;
         left: 50%;
         transform: translateX(-50%);
         background-color: rgba(255, 0, 0, 0.9);
@@ -83,7 +85,7 @@ st.markdown(
         border-radius: 10px;
         font-weight: bold;
         z-index: 1000;
-        width: 30%;
+        width: 40%;
         text-align: center;
     }}
     </style>
