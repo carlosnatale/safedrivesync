@@ -51,29 +51,28 @@ st.markdown(
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-color: #3a3a3a;
-}}');
-        background-size: 65%;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        background-color: #3a3a3a;
-    }
+    }}');
+    background-size: 65%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: #3a3a3a;
     }
     .alert-box {{
-        margin-top: 70px;
-        background-color: rgba(255, 0, 0, 0.9);
-        color: white;
-        padding: 10px;
-        border-radius: 5px;
-        font-weight: bold;
-        width: 50%;
-        text-align: center;
-        overflow-wrap: break-word;
-        margin-left: calc(1cm);
-        margin-right: auto;
-    }}
-    </style>
-    """,
+    margin-top: 70px;
+    background-color: rgba(255, 0, 0, 0.9);
+     color: white;
+     padding: 10px;
+     border-radius: 5px;
+     font-weight: bold;
+     width: 50%;
+     text-align: center;
+     overflow-wrap: break-word;
+     margin-left: calc(1cm);
+     margin-right: auto;
+     }}
+     </style>
+     """,
     unsafe_allow_html=True
 )
 
