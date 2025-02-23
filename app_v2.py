@@ -78,22 +78,22 @@ def generate_biometric_data():
         "SpO2 (%)": random.randint(85, 100),
         "Blood Sugar (mg/dL)": random.randint(70, 180),
         "Motion Intensity": random.randint(0, 10),
-        "Stress Level": random.randint(0, 100),
-        "Fatigue Risk": random.randint(0, 100),
-        "Health Crisis Risk": random.randint(0, 100)
+        "Stress Level": random.randint(40, 100),
+        "Fatigue Risk": random.randint(40, 100),
+        "Health Crisis Risk": random.randint(40, 100)
     }
 
 # Function to classify conditions
 def classify_risk(value, metric):
     if metric == "Heart Rate (bpm)":
-        if value <= 100:
-            return "Normal"
-        elif value <= 120:
-            return "Moderate"
-        elif value <= 140:
-            return "High"
-        else:
-            return "Critical"
+        if value <= 20:
+    return "Normal"
+elif value <= 49:
+    return "Moderate"
+elif value <= 74:
+    return "High"
+else:
+    return "Critical"
     elif metric == "HRV (ms)":
         if value > 50:
             return "Normal"
@@ -162,21 +162,10 @@ for _ in range(100):  # Simulate 100 updates
         fatigue_status = classify_risk(biometric_data["Fatigue Risk"], "Fatigue Risk")
         health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"], "Health Crisis Risk")
         
-        # Validate biometric data conditions
-        if biometric_data["Stress Level"] is not None:
-            stress_status = classify_risk(biometric_data["Stress Level"], "Stress Level")
-        else:
-            stress_status = "Normal"
-        
-        if biometric_data["Fatigue Risk"] is not None:
-            fatigue_status = classify_risk(biometric_data["Fatigue Risk"], "Fatigue Risk")
-        else:
-            fatigue_status = "Normal"
-        
-        if biometric_data["Health Crisis Risk"] is not None:
-            health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"], "Health Crisis Risk")
-        else:
-            health_crisis_status = "Normal"
+        # Classify biometric data and prioritize notifications
+        stress_status = classify_risk(biometric_data["Stress Level"], "Stress Level")
+        fatigue_status = classify_risk(biometric_data["Fatigue Risk"], "Fatigue Risk")
+        health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"], "Health Crisis Risk")
         
         # Prioritize: Health Crisis > Fatigue > Stress
         if health_crisis_status != "Normal":
