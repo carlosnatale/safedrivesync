@@ -9,7 +9,7 @@ st.set_page_config(page_title="SafeDrive Sync", layout="wide")
 # Custom CSS for Classic Dashboard Look
 st.markdown("""
     <style>
-        .main { background-color: #f8f9fa; color: black; }
+        .main { background-color: #3a3a3a; color: black; }
         .stAlert { font-size: 16px; }
         .stButton>button { border-radius: 8px; padding: 10px; background: #007bff; color: white; border: none; }
         .stDataFrame { background-color: white; color: black; border-radius: 10px; padding: 10px; }
