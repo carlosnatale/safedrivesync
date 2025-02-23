@@ -93,7 +93,7 @@ def classify_risk(value, metric):
         elif value <= 79:
             return "High"
         else:
-    return "Critical"
+        return "Critical"
     elif metric == "HRV (ms)":
         if value > 50:
             return "Normal"
@@ -102,7 +102,7 @@ def classify_risk(value, metric):
         elif value > 20:
             return "High"
         else:
-    return "Critical"
+        return "Critical"
     elif metric == "SpO2 (%)":
         if value >= 95:
             return "Normal"
@@ -111,7 +111,7 @@ def classify_risk(value, metric):
         elif value >= 85:
             return "High"
         else:
-    return "Critical"
+        return "Critical"
     elif metric == "Blood Sugar (mg/dL)":
         if value <= 140:
             return "Normal"
@@ -120,7 +120,7 @@ def classify_risk(value, metric):
         elif value <= 250:
             return "High"
         else:
-    return "Critical"
+        return "Critical"
     elif metric == "Motion Intensity":
         if value <= 3:
             return "Normal"
@@ -129,7 +129,7 @@ def classify_risk(value, metric):
         elif value <= 8:
             return "High"
         else:
-    return "Critical"
+        return "Critical"
     else:
         return "Normal"
 
