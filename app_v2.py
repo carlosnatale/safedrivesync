@@ -85,12 +85,21 @@ def generate_biometric_data():
 
 # Function to classify conditions
 def classify_risk(value, metric):
-    if metric == "Heart Rate (bpm)":
+    if metric in ["Stress Level", "Fatigue Risk", "Health Crisis Risk"]:
         if value <= 39:
             return "Normal"
         elif value <= 59:
             return "Moderate"
         elif value <= 79:
+            return "High"
+        else:
+            return "Critical"
+    elif metric == "Heart Rate (bpm)":
+        if value <= 100:
+            return "Normal"
+        elif value <= 120:
+            return "Moderate"
+        elif value <= 140:
             return "High"
         else:
             return "Critical"
@@ -130,59 +139,6 @@ def classify_risk(value, metric):
             return "High"
         else:
             return "Critical"
-    elif metric == "Stress Level" or metric == "Fatigue Risk" or metric == "Health Crisis Risk":
-        if value <= 39:
-            return "Normal"
-        elif value <= 59:
-            return "Moderate"
-        elif value <= 79:
-            return "High"
-        else:
-            return "Critical"
-    else:
-        return "Normal"
-        elif value <= 59:
-            return "Moderate"
-        elif value <= 79:
-            return "High"
-        else:
-        return "Critical"
-    elif metric == "HRV (ms)":
-        if value > 50:
-            return "Normal"
-        elif value > 35:
-            return "Moderate"
-        elif value > 20:
-            return "High"
-        else:
-        return "Critical"
-    elif metric == "SpO2 (%)":
-        if value >= 95:
-            return "Normal"
-        elif value >= 90:
-            return "Moderate"
-        elif value >= 85:
-            return "High"
-        else:
-        return "Critical"
-    elif metric == "Blood Sugar (mg/dL)":
-        if value <= 140:
-            return "Normal"
-        elif value <= 180:
-            return "Moderate"
-        elif value <= 250:
-            return "High"
-        else:
-        return "Critical"
-    elif metric == "Motion Intensity":
-        if value <= 3:
-            return "Normal"
-        elif value <= 6:
-            return "Moderate"
-        elif value <= 8:
-            return "High"
-        else:
-        return "Critical"
     else:
         return "Normal"
 
@@ -208,9 +164,9 @@ for _ in range(100):  # Simulate 100 updates
         st.markdown('<div style="margin-top: 1cm;"><h2>Real-Time Driver Health Data</h2></div>', unsafe_allow_html=True)
         st.markdown('<div style="margin-top: 1cm;">', unsafe_allow_html=True)
         st.dataframe(data_table.style.set_properties(**{
-    'background-color': '#3a3a3a',
-    'color': '#d3d3d3'
-}).highlight_max(axis=1, color='red').highlight_min(axis=1, color='green'))
+            'background-color': '#3a3a3a',
+            'color': '#d3d3d3'
+        }).highlight_max(axis=1, color='red').highlight_min(axis=1, color='green'))
         st.markdown('</div>', unsafe_allow_html=True)
         
         # Classify biometric data and prioritize notifications
