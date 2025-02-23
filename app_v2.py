@@ -165,8 +165,11 @@ for _ in range(100):  # Simulate 100 updates
         st.markdown('<div style="margin-top: 1cm;">', unsafe_allow_html=True)
         st.dataframe(data_table.style.set_properties(**{
             'background-color': '#3a3a3a',
-            'color': '#d3d3d3'
-        }).highlight_max(axis=1, color='red').highlight_min(axis=1, color='green'))
+            'color': '#d3d3d3',
+            'border-color': '#3a3a3a'
+        }).set_table_styles([
+            {'selector': 'th', 'props': [('background-color', '#3a3a3a'), ('color', '#d3d3d3')]}
+        ]).highlight_max(axis=1, color='red').highlight_min(axis=1, color='green'))
         st.markdown('</div>', unsafe_allow_html=True)
         
         # Classify biometric data and prioritize notifications
