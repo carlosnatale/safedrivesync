@@ -126,7 +126,8 @@ def handle_responses(status, responses_dict, situation):
     }
     if status != "Normal":
         for response in responses_dict.get(status, []):
-            st.markdown(f'<div class="alert-box">{situation} - {status}: {dynamic_messages[status]} | Action: {response}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="alert-box">Notification: {situation} - {status}: {dynamic_messages[status]}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="alert-box">Action Triggered: {response}</div>', unsafe_allow_html=True)
 
 # Main loop for real-time simulation
 placeholder = st.empty()
