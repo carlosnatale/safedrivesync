@@ -161,7 +161,7 @@ for _ in range(100):  # Simulate 100 updates
     biometric_data = generate_biometric_data()
     data_table = pd.DataFrame([biometric_data])
     with placeholder.container():
-        st.markdown('<div style="margin-top: 1cm; background-color: #3a3a3a; color: #d3d3d3; padding: 10px; border-radius: 5px;"><h2>Real-Time Driver Health Data</h2></div>', unsafe_allow_html=True)
+        st.markdown('<div style="margin-top: 1cm;"><h2>Real-Time Driver Health Data</h2></div>', unsafe_allow_html=True)
         st.markdown('<div style="margin-top: 1cm;">', unsafe_allow_html=True)
         st.dataframe(data_table.style.set_properties(**{
             'background-color': '#3a3a3a',
