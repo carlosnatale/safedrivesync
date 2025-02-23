@@ -45,34 +45,28 @@ st.markdown(
     f"""
     <style>
     .stApp {{
-    background-image: url('data:image/png;base64,{background_base64}');
-    background-size: 65%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-color: #3a3a3a;
-    }}');
-    background-size: 65%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-color: #3a3a3a;
-    }
+        background-image: url('data:image/png;base64,{background_base64}');
+        background-size: 65%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-color: #3a3a3a;
+    }}
     .alert-box {{
-    margin-top: 70px;
-    background-color: rgba(255, 0, 0, 0.9);
-     color: white;
-     padding: 10px;
-     border-radius: 5px;
-     font-weight: bold;
-     width: 50%;
-     text-align: center;
-     overflow-wrap: break-word;
-     margin-left: calc(1cm);
-     margin-right: auto;
-     }}
-     </style>
-     """,
+        margin-top: 70px;
+        background-color: rgba(255, 0, 0, 0.9);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        width: 50%;
+        text-align: center;
+        overflow-wrap: break-word;
+        margin-left: calc(1cm);
+        margin-right: auto;
+    }}
+    </style>
+    """,
     unsafe_allow_html=True
 )
 
@@ -146,13 +140,11 @@ def handle_responses(situation, status, response_dict):
         "High": "High level detected! Take action immediately.",
         "Critical": "CRITICAL! Immediate intervention required."
     }
-    
     if status != "Normal" and response_dict.get(status, []):
         st.markdown(f'<div class="alert-box">Notification: {situation} - {status}: {dynamic_messages[status]}</div>', unsafe_allow_html=True)
         for response in response_dict.get(status, []):
             if response != "Send Notification":
-                if response != "Send Notification":
-    st.markdown(f'<div class="alert-box">Action Triggered: {response}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="alert-box">Action Triggered: {response}</div>', unsafe_allow_html=True)
 
 # Main simulation loop
 placeholder = st.empty()
@@ -160,7 +152,6 @@ for _ in range(100):  # Simulate 100 updates
     biometric_data = generate_biometric_data()
     data_table = pd.DataFrame([biometric_data])
     with placeholder.container():
-        
         st.markdown('<div style="margin-top: 1cm;"><h2>Real-Time Driver Health Data</h2></div>', unsafe_allow_html=True)
         st.markdown('<div style="margin-top: 1cm;">', unsafe_allow_html=True)
         st.dataframe(data_table.style.highlight_max(axis=1, color='red').highlight_min(axis=1, color='green'))
