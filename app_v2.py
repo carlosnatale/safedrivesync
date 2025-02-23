@@ -137,7 +137,7 @@ for _ in range(100):  # Simulate 100 updates
     with placeholder.container():
         st.markdown('<div class="data-area">', unsafe_allow_html=True)
         st.markdown('<div style="margin-top: 1cm;"><h2>Real-Time Driver Health Data</h2></div>', unsafe_allow_html=True)
-        st.markdown('<div style="margin-top: 2cm;">', unsafe_allow_html=True)
+        st.markdown('<div style="margin-top: 1 cm;">', unsafe_allow_html=True)
         st.dataframe(data_table.style.highlight_max(axis=1, color='red').highlight_min(axis=1, color='green'))
         st.markdown('</div>', unsafe_allow_html=True)
         # Check and handle alerts
