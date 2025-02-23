@@ -52,6 +52,17 @@ st.markdown(
         background-attachment: fixed;
         background-color: #3a3a3a;
     }}
+    .data-area {{
+        position: absolute;
+        margin-top: 0cm;
+        left: 30%;
+        width: 40%;
+        height: auto;
+        background: rgba(58, 58, 58, 0.9);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+    }}
     .alert-box {{
         margin-top: 70px;
         background-color: rgba(255, 0, 0, 0.9);
@@ -78,60 +89,21 @@ def generate_biometric_data():
         "SpO2 (%)": random.randint(85, 100),
         "Blood Sugar (mg/dL)": random.randint(70, 180),
         "Motion Intensity": random.randint(0, 10),
-        "Stress Level": random.randint(40, 100),
-        "Fatigue Risk": random.randint(40, 100),
-        "Health Crisis Risk": random.randint(40, 100)
+        "Stress Level": random.randint(0, 100),
+        "Fatigue Risk": random.randint(0, 100),
+        "Health Crisis Risk": random.randint(0, 100)
     }
 
 # Function to classify conditions
-def classify_risk(value, metric):
-    if metric == "Heart Rate (bpm)":
-        if value <= 20:
-            return "Normal"
-        elif value <= 49:
-            return "Moderate"
-        elif value <= 74:
-            return "High"
-        else:
-            return "Critical"
-    elif metric == "HRV (ms)":
-        if value > 50:
-            return "Normal"
-        elif value > 35:
-            return "Moderate"
-        elif value > 20:
-            return "High"
-        else:
-            return "Critical"
-    elif metric == "SpO2 (%)":
-        if value >= 95:
-            return "Normal"
-        elif value >= 90:
-            return "Moderate"
-        elif value >= 85:
-            return "High"
-        else:
-            return "Critical"
-    elif metric == "Blood Sugar (mg/dL)":
-        if value <= 140:
-            return "Normal"
-        elif value <= 180:
-            return "Moderate"
-        elif value <= 250:
-            return "High"
-        else:
-            return "Critical"
-    elif metric == "Motion Intensity":
-        if value <= 3:
-            return "Normal"
-        elif value <= 6:
-            return "Moderate"
-        elif value <= 8:
-            return "High"
-        else:
-            return "Critical"
-    else:
+def classify_risk(value):
+    if value < 25:
         return "Normal"
+    elif value < 50:
+        return "Moderate"
+    elif value < 75:
+        return "High"
+    else:
+        return "Critical"
 
 # Function to handle vehicle responses
 def handle_responses(situation, status, response_dict):
@@ -140,6 +112,7 @@ def handle_responses(situation, status, response_dict):
         "High": "High level detected! Take action immediately.",
         "Critical": "CRITICAL! Immediate intervention required."
     }
+    
     if status != "Normal" and response_dict.get(status, []):
         st.markdown(f'<div class="alert-box">Notification: {situation} - {status}: {dynamic_messages[status]}</div>', unsafe_allow_html=True)
         for response in response_dict.get(status, []):
@@ -158,9 +131,9 @@ for _ in range(100):  # Simulate 100 updates
         st.markdown('</div>', unsafe_allow_html=True)
         
         # Classify biometric data and prioritize notifications
-        stress_status = classify_risk(biometric_data["Stress Level"], "Stress Level")
-        fatigue_status = classify_risk(biometric_data["Fatigue Risk"], "Fatigue Risk")
-        health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"], "Health Crisis Risk")
+        stress_status = classify_risk(biometric_data["Stress Level"])
+        fatigue_status = classify_risk(biometric_data["Fatigue Risk"])
+        health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"])
         
         # Prioritize: Health Crisis > Fatigue > Stress
         if health_crisis_status != "Normal":
