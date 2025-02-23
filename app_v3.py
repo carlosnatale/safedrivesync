@@ -6,31 +6,20 @@ import time
 # Streamlit configuration
 st.set_page_config(page_title="SafeDrive Sync", layout="wide")
 
-# Custom CSS for notifications over the infotainment image
+# Custom CSS for the classic dashboard look with updated background color
 st.markdown("""
     <style>
-        .main { background-color: #f8f9fa; color: black; }
+        .main { background-color: #3a3a3a; color: white; }
         .stAlert { font-size: 16px; }
         .stButton>button { border-radius: 8px; padding: 10px; background: #007bff; color: white; border: none; }
         .stDataFrame { background-color: white; color: black; border-radius: 10px; padding: 10px; }
         .stSidebar { background: #e9ecef; }
         .dashboard-container { display: flex; justify-content: space-between; padding: 10px; gap: 20px; }
         .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 2px solid #ced4da; text-align: left; }
-        .notification-overlay {
-            position: relative;
-            width: 100%;
-            height: auto;
-        }
-        .notification-text {
-            position: absolute;
-            top: 20%;
-            left: 10%;
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-        }
+        .action-box { padding: 20px; border-radius: 10px; background: #d1ecf1; border: 3px solid #004085; text-align: left; font-size: 18px; }
+        .notification-box { padding: 20px; border-radius: 10px; background: #f8d7da; border: 3px solid #dc3545; text-align: left; font-size: 18px; }
+        .alert-title { font-weight: bold; font-size: 22px; margin-bottom: 15px; text-align: center; }
+        .alert-content { font-size: 20px; padding: 10px 15px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -79,14 +68,18 @@ monitoring = st.toggle("Enable Real-Time Monitoring", value=True)
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
 
-# Display notifications on infotainment image
+# Display infotainment image at the end
+st.subheader("🖼️ Infotainment System Display")
+st.image("infotainment - Copia.png", use_column_width=True)
+
+# Display notifications
 if monitoring:
     while True:
         fake_data = generate_fake_data()
         df = pd.DataFrame([fake_data])
         data_placeholder.dataframe(df, use_container_width=True)
 
-        notifications = []
+        notifications = {"Stress": [], "Fatigue": [], "Health Crisis": []}
         for category, risk_key in zip(
             ["Stress", "Fatigue", "Health Crisis"],
             ["Stress Level", "Fatigue Risk", "Health Crisis Risk"]
@@ -94,14 +87,20 @@ if monitoring:
             current_level = fake_data[risk_key]
             notification = generate_notification(category, current_level)
             if notification != "✅ Normal Condition":
-                notifications.append(notification)
+                notifications[category].append(notification)
 
-        infotainment_image = "infotainment - Copia.png"
-        st.markdown(f"""
-            <div class='notification-overlay'>
-                <img src='data:image/png;base64,{st.image(infotainment_image, use_column_width=True)}' alt='Infotainment Screen'>
-                <div class='notification-text'>{'<br>'.join(notifications)}</div>
+        st.markdown(
+            """
+            <div class='dashboard-box notification-box'>
+                <div class='alert-title'>📢 Car's Infotainment System Notifications</div>
+                {}
             </div>
-        """, unsafe_allow_html=True)
-        
+            """.format(
+                "<br>".join(
+                    [f"<strong>{category}:</strong> {'<br>'.join(notifs) if notifs else '✅ No notifications sent.'}"
+                     for category, notifs in notifications.items()]
+                )
+            ),
+            unsafe_allow_html=True
+        )
         time.sleep(3)
