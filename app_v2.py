@@ -168,7 +168,8 @@ for _ in range(100):  # Simulate 100 updates
             'color': '#d3d3d3',
             'border-color': '#3a3a3a'
         }).set_table_styles([
-            {'selector': 'th', 'props': [('background-color', '#3a3a3a'), ('color', '#d3d3d3')]}
+            {'selector': 'th', 'props': [('background-color', '#3a3a3a'), ('color', '#d3d3d3')]},
+            {'selector': 'thead th', 'props': [('background-color', '#3a3a3a'), ('color', '#d3d3d3')]}
         ]).highlight_max(axis=1, color='red').highlight_min(axis=1, color='green'))
         st.markdown('</div>', unsafe_allow_html=True)
         
