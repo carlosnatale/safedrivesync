@@ -51,7 +51,7 @@ st.markdown(
         background-repeat: no-repeat;
         background-attachment: fixed;
         background-color: #3a3a3a;
-    }}
+    }
     }
     .alert-box {{
         margin-top: 70px;
@@ -136,4 +136,3 @@ for _ in range(100):  # Simulate 100 updates
         else:
             st.markdown('<div class="alert-box" style="background-color: rgba(0, 128, 0, 0.9);">Normal Condition</div>', unsafe_allow_html=True)
     time.sleep(10)  # Update every 10 seconds
-
