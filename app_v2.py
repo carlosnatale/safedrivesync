@@ -113,7 +113,7 @@ def handle_responses(situation, status, response_dict):
         "Critical": "CRITICAL! Immediate intervention required."
     }
     
-    if status != "Normal":
+    if status != "Normal" and response_dict.get(status, []):
         st.markdown(f'<div class="alert-box">Notification: {situation} - {status}: {dynamic_messages[status]}</div>', unsafe_allow_html=True)
         for response in response_dict.get(status, []):
             if response != "Send Notification":
