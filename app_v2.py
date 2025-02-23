@@ -162,10 +162,21 @@ for _ in range(100):  # Simulate 100 updates
         fatigue_status = classify_risk(biometric_data["Fatigue Risk"], "Fatigue Risk")
         health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"], "Health Crisis Risk")
         
-        # Debug outputs to verify classifications
-        st.write(f"Stress Level: {biometric_data['Stress Level']} - Classified as: {stress_status}")
-        st.write(f"Fatigue Risk: {biometric_data['Fatigue Risk']} - Classified as: {fatigue_status}")
-        st.write(f"Health Crisis Risk: {biometric_data['Health Crisis Risk']} - Classified as: {health_crisis_status}")
+        # Validate biometric data conditions
+        if biometric_data["Stress Level"] is not None:
+            stress_status = classify_risk(biometric_data["Stress Level"], "Stress Level")
+        else:
+            stress_status = "Normal"
+        
+        if biometric_data["Fatigue Risk"] is not None:
+            fatigue_status = classify_risk(biometric_data["Fatigue Risk"], "Fatigue Risk")
+        else:
+            fatigue_status = "Normal"
+        
+        if biometric_data["Health Crisis Risk"] is not None:
+            health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"], "Health Crisis Risk")
+        else:
+            health_crisis_status = "Normal"
         
         # Prioritize: Health Crisis > Fatigue > Stress
         if health_crisis_status != "Normal":
