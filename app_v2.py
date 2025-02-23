@@ -76,18 +76,6 @@ st.markdown(
         margin-left: calc(1cm);
         margin-right: auto;
     }}
-    .normal-alert {{
-        margin-top: 70px;
-        background-color: rgba(0, 128, 0, 0.9);
-        color: white;
-        padding: 10px;
-        border-radius: 5px;
-        font-weight: bold;
-        width: 50%;
-        text-align: center;
-        margin-left: auto;
-        margin-right: auto;
-    }}
     </style>
     """,
     unsafe_allow_html=True
@@ -118,41 +106,43 @@ def classify_risk(value):
         return "Critical"
 
 # Function to handle vehicle responses
-def handle_responses(stress_status, fatigue_status, health_crisis_status, stress_responses, fatigue_responses, health_crisis_responses):
+def handle_responses(situation, status, response_dict):
     dynamic_messages = {
         "Moderate": "Moderate level detected. Please be cautious.",
         "High": "High level detected! Take action immediately.",
         "Critical": "CRITICAL! Immediate intervention required."
     }
-
-    # Prioritize Health Crisis > Fatigue > Stress
-    if health_crisis_status != "Normal":
-        situation = "Health Crisis"
-        status = health_crisis_status
-        response_dict = health_crisis_responses
-    elif fatigue_status != "Normal":
-        situation = "Fatigue"
-        status = fatigue_status
-        response_dict = fatigue_responses
-    elif stress_status != "Normal":
-        situation = "Stress"
-        status = stress_status
-        response_dict = stress_responses
-    else:
-        situation = None
-        status = "Normal"
-        response_dict = None
     
-    # Display the most critical notification and action
-    if situation:
+    if status != "Normal":
         st.markdown(f'<div class="alert-box">Notification: {situation} - {status}: {dynamic_messages[status]}</div>', unsafe_allow_html=True)
         for response in response_dict.get(status, []):
             if response != "Send Notification":
                 st.markdown(f'<div class="alert-box">Action Triggered: {response}</div>', unsafe_allow_html=True)
-        # Check and handle alerts
+
+# Main simulation loop
+placeholder = st.empty()
+for _ in range(100):  # Simulate 100 updates
+    biometric_data = generate_biometric_data()
+    data_table = pd.DataFrame([biometric_data])
+    with placeholder.container():
+        st.markdown('<div class="data-area">', unsafe_allow_html=True)
+        st.markdown('<div style="margin-top: 1cm;"><h2>Real-Time Driver Health Data</h2></div>', unsafe_allow_html=True)
+        st.markdown('<div style="margin-top: 1cm;">', unsafe_allow_html=True)
+        st.dataframe(data_table.style.highlight_max(axis=1, color='red').highlight_min(axis=1, color='green'))
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Classify biometric data and prioritize notifications
         stress_status = classify_risk(biometric_data["Stress Level"])
         fatigue_status = classify_risk(biometric_data["Fatigue Risk"])
         health_crisis_status = classify_risk(biometric_data["Health Crisis Risk"])
-        handle_responses(stress_status, fatigue_status, health_crisis_status, stress_responses, fatigue_responses, health_crisis_responses)
-        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Prioritize: Health Crisis > Fatigue > Stress
+        if health_crisis_status != "Normal":
+            handle_responses("Health Crisis", health_crisis_status, health_crisis_responses)
+        elif fatigue_status != "Normal":
+            handle_responses("Fatigue", fatigue_status, fatigue_responses)
+        elif stress_status != "Normal":
+            handle_responses("Stress", stress_status, stress_responses)
+        else:
+            st.markdown('<div class="alert-box" style="background-color: rgba(0, 128, 0, 0.9);">Normal Condition</div>', unsafe_allow_html=True)
     time.sleep(10)  # Update every 10 seconds
