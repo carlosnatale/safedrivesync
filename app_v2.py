@@ -52,17 +52,7 @@ st.markdown(
         background-attachment: fixed;
         background-color: #3a3a3a;
     }}
-    .data-area {{
-        position: absolute;
-        margin-top: 20cm;
-        left: 30%;
-        width: 40%;
-        height: auto;
-        background: rgba(58, 58, 58, 0.9);
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-    }}
+    }
     .alert-box {{
         margin-top: 70px;
         background-color: rgba(255, 0, 0, 0.9);
@@ -146,3 +136,4 @@ for _ in range(100):  # Simulate 100 updates
         else:
             st.markdown('<div class="alert-box" style="background-color: rgba(0, 128, 0, 0.9);">Normal Condition</div>', unsafe_allow_html=True)
     time.sleep(10)  # Update every 10 seconds
+
