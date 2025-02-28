@@ -6,7 +6,7 @@ import time
 # Streamlit Configuration
 st.set_page_config(page_title="SafeDrive Sync", layout="wide")
 
-# Custom CSS for Mobile Optimization (Only for Real-Time Data Section)
+# Custom CSS for Mobile Optimization
 st.markdown("""
     <style>
         .main { background-color: #3a3a3a; color: black; }
@@ -14,7 +14,31 @@ st.markdown("""
         .stButton>button { border-radius: 8px; padding: 10px; background: #007bff; color: white; border: none; }
         .dashboard-container { display: flex; justify-content: space-between; padding: 10px; gap: 20px; }
         .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 2px solid #ced4da; text-align: left; }
-        .mobile-table { overflow-x: auto; max-width: 100%; display: block; }
+        .mobile-metrics {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .metric-box {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ced4da;
+            text-align: center;
+            flex: 1 1 calc(50% - 20px);
+            min-width: 120px;
+        }
+        .metric-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #495057;
+        }
+        .metric-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #212529;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -87,47 +111,18 @@ with col3:
 
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
-action_placeholder = st.empty()
-notification_placeholder = st.empty()
-
 if monitoring:
     while True:
         fake_data = generate_fake_data()
-        df = pd.DataFrame([fake_data])
         
-        # Adjusted for Mobile View: Wrapped in Scrollable Div
         with data_placeholder.container():
-            st.markdown('<div class="mobile-table">', unsafe_allow_html=True)
-            st.dataframe(df, use_container_width=True)
+            st.markdown('<div class="mobile-metrics">', unsafe_allow_html=True)
+            for key, value in fake_data.items():
+                st.markdown(
+                    f'<div class="metric-box">'
+                    f'<div class="metric-title">{key}</div>'
+                    f'<div class="metric-value">{value}</div>'
+                    f'</div>', unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
-        
-        actions_taken = {"Stress": [], "Fatigue": [], "Health Crisis": []}
-        notifications = {"Stress": [], "Fatigue": [], "Health Crisis": []}
-        
-        for category, risk_key, action_dict in zip(
-            ["Stress", "Fatigue", "Health Crisis"],
-            ["Stress Level", "Fatigue Risk", "Health Crisis Risk"],
-            [stress_actions, fatigue_actions, health_crisis_actions]
-        ):
-            current_level = fake_data[risk_key]
-            selected_actions = action_dict.get(current_level, [])
-            
-            for action in selected_actions:
-                if action == "Send Notification":
-                    notifications[category].append(generate_notification(category, current_level))
-                else:
-                    actions_taken[category].append(f"🚗 {action} activated due to {category} ({current_level})")
-        
-        with action_placeholder.container():
-            for category, actions in actions_taken.items():
-                if actions:
-                    st.markdown(f"**{category} Actions:**")
-                    st.markdown("<div class='dashboard-box'>" + "<br>".join(actions) + "</div>", unsafe_allow_html=True)
-        
-        with notification_placeholder.container():
-            for category, notifs in notifications.items():
-                if notifs:
-                    st.markdown(f"**{category} Alerts:**")
-                    st.markdown("<div class='dashboard-box'>" + "<br>".join(notifs) + "</div>", unsafe_allow_html=True)
         
         time.sleep(3)
