@@ -15,10 +15,10 @@ st.markdown("""
         .dashboard-container { display: flex; justify-content: space-between; padding: 10px; gap: 20px; }
         .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 2px solid #ced4da; text-align: left; }
         .mobile-metrics {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 10px;
+            justify-content: center;
         }
         .metric-box {
             background: linear-gradient(135deg, #f0f2f5, #d9e2ec);
@@ -26,8 +26,6 @@ st.markdown("""
             border-radius: 12px;
             border: 1px solid #ced4da;
             text-align: center;
-            flex: 1 1 calc(50% - 20px);
-            min-width: 140px;
             box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
         }
         .metric-title {
