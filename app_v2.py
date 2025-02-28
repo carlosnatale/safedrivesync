@@ -87,6 +87,7 @@ with col3:
 
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
+action_placeholder = st.empty()
 notification_placeholder = st.empty()
 
 if monitoring:
@@ -100,6 +101,7 @@ if monitoring:
             st.dataframe(df, use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
         
+        actions_taken = {"Stress": [], "Fatigue": [], "Health Crisis": []}
         notifications = {"Stress": [], "Fatigue": [], "Health Crisis": []}
         
         for category, risk_key, action_dict in zip(
@@ -113,7 +115,15 @@ if monitoring:
             for action in selected_actions:
                 if action == "Send Notification":
                     notifications[category].append(generate_notification(category, current_level))
-                
+                else:
+                    actions_taken[category].append(f"🚗 {action} activated due to {category} ({current_level})")
+        
+        with action_placeholder.container():
+            for category, actions in actions_taken.items():
+                if actions:
+                    st.markdown(f"**{category} Actions:**")
+                    st.markdown("<div class='dashboard-box'>" + "<br>".join(actions) + "</div>", unsafe_allow_html=True)
+        
         with notification_placeholder.container():
             for category, notifs in notifications.items():
                 if notifs:
