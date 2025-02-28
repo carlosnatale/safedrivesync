@@ -119,22 +119,17 @@ if monitoring:
         
         with data_placeholder.container():
             st.markdown('<div class="mobile-metrics">', unsafe_allow_html=True)
-            keys = list(fake_data.keys())
-            rows = [keys[i:i+3] for i in range(0, len(keys), 3)]
-            for row in rows:
-                st.markdown('<div style="display: flex; justify-content: space-around;">', unsafe_allow_html=True)
-                for key in row:
-                    st.markdown(
-                        f'<div class="metric-box">'
-                        f'<div class="metric-title">{key}</div>'
-                        f'<div class="metric-value">{fake_data[key]}</div>'
-                        f'</div>', unsafe_allow_html=True)
-                st.markdown('</div>', unsafe_allow_html=True)
+            for key, value in fake_data.items():
+                st.markdown(
+                    f'<div class="metric-box">'
+                    f'<div class="metric-title">{key}</div>'
+                    f'<div class="metric-value">{value}</div>'
+                    f'</div>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
         
         # Handle actions and notifications
-        actions_taken = {"Stress": [], "Fatigue": [], "Health Crisis": []}
-        notifications = {"Stress": [], "Fatigue": [], "Health Crisis": []}
-        
+        notifications = []
+        actions_taken = []
         for category, risk_key, action_dict in zip(
             ["Stress", "Fatigue", "Health Crisis"],
             ["Stress Level", "Fatigue Risk", "Health Crisis Risk"],
@@ -145,11 +140,16 @@ if monitoring:
             
             for action in selected_actions:
                 if action == "Send Notification":
-                    notifications[category].append(generate_notification(category, current_level))
+                    notifications.append(generate_notification(category, current_level))
                 else:
-                    actions_taken[category].append(f"🚗 {action} activated due to {category} ({current_level})")
+                    actions_taken.append(f"🚗 {action} activated due to {category} ({current_level})")
         
-        st.write("🚘 **Vehicle Actions Taken:**", actions_taken)
-        st.write("📢 **Notifications:**", notifications)
+        with notification_placeholder.container():
+            if notifications:
+                st.markdown("<div class='dashboard-box'><b>📢 Notifications:</b><br>" + "<br>".join(notifications) + "</div>", unsafe_allow_html=True)
+        
+        with action_placeholder.container():
+            if actions_taken:
+                st.markdown("<div class='dashboard-box'><b>🚘 Vehicle Actions Taken:</b><br>" + "<br>".join(actions_taken) + "</div>", unsafe_allow_html=True)
         
         time.sleep(3)
