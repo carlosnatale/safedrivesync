@@ -16,7 +16,7 @@ st.markdown("""
         .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 2px solid #ced4da; text-align: left; }
         .mobile-metrics {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 10px;
             justify-content: center;
         }
@@ -111,7 +111,6 @@ with col3:
 
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
-action_placeholder = st.empty()
 notification_placeholder = st.empty()
 if monitoring:
     while True:
@@ -119,42 +118,18 @@ if monitoring:
         
         with data_placeholder.container():
             st.markdown('<div class="mobile-metrics">', unsafe_allow_html=True)
-            for key, value in fake_data.items():
-                st.markdown(
-                    f'<div class="metric-box">'
-                    f'<div class="metric-title">{key}</div>'
-                    f'<div class="metric-value">{value}</div>'
-                    f'</div>', unsafe_allow_html=True)
+            keys = list(fake_data.keys())
+            for i in range(0, len(keys), 3):
+                row_items = keys[i:i+3]
+                st.markdown('<div style="display: flex; justify-content: space-around;">', unsafe_allow_html=True)
+                for key in row_items:
+                    value = fake_data[key]
+                    st.markdown(
+                        f'<div class="metric-box">'
+                        f'<div class="metric-title">{key}</div>'
+                        f'<div class="metric-value">{value}</div>'
+                        f'</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
-        
-        actions_taken = {"Stress": [], "Fatigue": [], "Health Crisis": []}
-        notifications = {"Stress": [], "Fatigue": [], "Health Crisis": []}
-        
-        for category, risk_key, action_dict in zip(
-            ["Stress", "Fatigue", "Health Crisis"],
-            ["Stress Level", "Fatigue Risk", "Health Crisis Risk"],
-            [stress_actions, fatigue_actions, health_crisis_actions]
-        ):
-            current_level = fake_data[risk_key]
-            selected_actions = action_dict.get(current_level, [])
-            
-            for action in selected_actions:
-                if action == "Send Notification":
-                    notifications[category].append(generate_notification(category, current_level))
-                else:
-                    actions_taken[category].append(f"🚗 {action} activated due to {category} ({current_level})")
-        
-        with action_placeholder.container():
-            st.markdown("**🚘 Vehicle Actions Taken:**")
-            for category, actions in actions_taken.items():
-                if actions:
-                    st.markdown(f"**{category} Actions:**")
-                    st.markdown("<div class='dashboard-box'>" + "<br>".join(actions) + "</div>", unsafe_allow_html=True)
-        
-        with notification_placeholder.container():
-            st.markdown("**📢 Notifications:**")
-            for category, notifs in notifications.items():
-                if notifs:
-                    st.markdown("<div class='dashboard-box'>" + "<br>".join(notifs) + "</div>", unsafe_allow_html=True)
         
         time.sleep(3)
