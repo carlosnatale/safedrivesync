@@ -111,6 +111,7 @@ with col3:
 
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
+action_placeholder = st.empty()
 notification_placeholder = st.empty()
 if monitoring:
     while True:
@@ -126,13 +127,34 @@ if monitoring:
                     f'</div>', unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
         
-        # Display notifications
-        notifications = [
-            generate_notification("Stress", fake_data['Stress Level']),
-            generate_notification("Fatigue", fake_data['Fatigue Risk']),
-            generate_notification("Health Crisis", fake_data['Health Crisis Risk'])
-        ]
+        actions_taken = {"Stress": [], "Fatigue": [], "Health Crisis": []}
+        notifications = {"Stress": [], "Fatigue": [], "Health Crisis": []}
+        
+        for category, risk_key, action_dict in zip(
+            ["Stress", "Fatigue", "Health Crisis"],
+            ["Stress Level", "Fatigue Risk", "Health Crisis Risk"],
+            [stress_actions, fatigue_actions, health_crisis_actions]
+        ):
+            current_level = fake_data[risk_key]
+            selected_actions = action_dict.get(current_level, [])
+            
+            for action in selected_actions:
+                if action == "Send Notification":
+                    notifications[category].append(generate_notification(category, current_level))
+                else:
+                    actions_taken[category].append(f"🚗 {action} activated due to {category} ({current_level})")
+        
+        with action_placeholder.container():
+            st.markdown("**🚘 Vehicle Actions Taken:**")
+            for category, actions in actions_taken.items():
+                if actions:
+                    st.markdown(f"**{category} Actions:**")
+                    st.markdown("<div class='dashboard-box'>" + "<br>".join(actions) + "</div>", unsafe_allow_html=True)
+        
         with notification_placeholder.container():
-            st.markdown("<div class='dashboard-box'><b>📢 Notifications:</b><br>" + "<br>".join(notifications) + "</div>", unsafe_allow_html=True)
+            st.markdown("**📢 Notifications:**")
+            for category, notifs in notifications.items():
+                if notifs:
+                    st.markdown("<div class='dashboard-box'>" + "<br>".join(notifs) + "</div>", unsafe_allow_html=True)
         
         time.sleep(3)
