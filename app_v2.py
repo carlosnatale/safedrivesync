@@ -4,18 +4,17 @@ import numpy as np
 import time
 
 # Streamlit Configuration
-st.set_page_config(page_title="SafeDrive Sync", layout="centered")
+st.set_page_config(page_title="SafeDrive Sync", layout="wide")
 
-# Custom CSS for Mobile Optimization
+# Custom CSS for Mobile Optimization (Only for Real-Time Data Section)
 st.markdown("""
     <style>
         .main { background-color: #3a3a3a; color: black; }
         .stAlert { font-size: 16px; }
         .stButton>button { border-radius: 8px; padding: 10px; background: #007bff; color: white; border: none; }
-        .dashboard-container { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .dashboard-box { width: 95%; padding: 15px; border-radius: 10px; background: #ffffff; border: 2px solid #ced4da; text-align: center; }
-        .alert-title { font-weight: bold; font-size: 18px; margin-bottom: 10px; }
-        .alert-content { font-size: 16px; }
+        .dashboard-container { display: flex; justify-content: space-between; padding: 10px; gap: 20px; }
+        .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 2px solid #ced4da; text-align: left; }
+        .mobile-table { overflow-x: auto; max-width: 100%; display: block; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -95,9 +94,11 @@ if monitoring:
         fake_data = generate_fake_data()
         df = pd.DataFrame([fake_data])
         
-        # Adjusted for Mobile View: Use Table Instead of DataFrame
+        # Adjusted for Mobile View: Wrapped in Scrollable Div
         with data_placeholder.container():
-            st.table(df)
+            st.markdown('<div class="mobile-table">', unsafe_allow_html=True)
+            st.dataframe(df, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
         
         notifications = {"Stress": [], "Fatigue": [], "Health Crisis": []}
         
