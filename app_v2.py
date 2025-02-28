@@ -21,23 +21,25 @@ st.markdown("""
             gap: 10px;
         }
         .metric-box {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 10px;
+            background: linear-gradient(135deg, #f0f2f5, #d9e2ec);
+            padding: 15px;
+            border-radius: 12px;
             border: 1px solid #ced4da;
             text-align: center;
             flex: 1 1 calc(50% - 20px);
-            min-width: 120px;
+            min-width: 140px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
         }
         .metric-title {
             font-weight: bold;
-            font-size: 14px;
+            font-size: 16px;
             color: #495057;
+            margin-bottom: 5px;
         }
         .metric-value {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
-            color: #212529;
+            color: #007bff;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -111,6 +113,7 @@ with col3:
 
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
+notification_placeholder = st.empty()
 if monitoring:
     while True:
         fake_data = generate_fake_data()
@@ -124,5 +127,14 @@ if monitoring:
                     f'<div class="metric-value">{value}</div>'
                     f'</div>', unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Display notifications
+        notifications = [
+            generate_notification("Stress", fake_data['Stress Level']),
+            generate_notification("Fatigue", fake_data['Fatigue Risk']),
+            generate_notification("Health Crisis", fake_data['Health Crisis Risk'])
+        ]
+        with notification_placeholder.container():
+            st.markdown("<div class='dashboard-box'><b>📢 Notifications:</b><br>" + "<br>".join(notifications) + "</div>", unsafe_allow_html=True)
         
         time.sleep(3)
