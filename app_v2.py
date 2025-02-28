@@ -120,16 +120,16 @@ if monitoring:
         with data_placeholder.container():
             st.markdown('<div class="mobile-metrics">', unsafe_allow_html=True)
             keys = list(fake_data.keys())
-            for i in range(0, len(keys), 3):
-                row_items = keys[i:i+3]
-                row = "".join(
-                    f'<div class="metric-box">'
-                    f'<div class="metric-title">{key}</div>'
-                    f'<div class="metric-value">{fake_data[key]}</div>'
-                    f'</div>' for key in row_items
-                )
-                st.markdown(f'<div style="display: flex; justify-content: space-around;">{row}</div>', unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            rows = [keys[i:i+3] for i in range(0, len(keys), 3)]
+            for row in rows:
+                st.markdown('<div style="display: flex; justify-content: space-around;">', unsafe_allow_html=True)
+                for key in row:
+                    st.markdown(
+                        f'<div class="metric-box">'
+                        f'<div class="metric-title">{key}</div>'
+                        f'<div class="metric-value">{fake_data[key]}</div>'
+                        f'</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
         
         # Handle actions and notifications
         actions_taken = {"Stress": [], "Fatigue": [], "Health Crisis": []}
