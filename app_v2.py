@@ -61,6 +61,31 @@ def generate_fake_data():
 st.title("🚗 SafeDrive Sync - Health Dashboard")
 monitoring = st.toggle("Enable Real-Time Monitoring", value=True)
 
+# Vehicle Response Settings
+st.subheader("🚘 Configure Vehicle Actions")
+levels = ['Low', 'Moderate', 'High', 'Critical']
+actions = [
+    "No Action", "Send Notification", "Reduce Speed", "Play Calming Music", "Turn On Air Conditioning", 
+    "Adjust Seat Position", "Activate Horn", "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
+]
+
+def action_multiselect(label, actions):
+    return st.multiselect(f"{label}", actions, default=["Send Notification"])
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.subheader("🧘 Stress Actions")
+    stress_actions = {level: action_multiselect(f"Stress {level}", actions) for level in levels}
+
+with col2:
+    st.subheader("😴 Fatigue Actions")
+    fatigue_actions = {level: action_multiselect(f"Fatigue {level}", actions) for level in levels}
+
+with col3:
+    st.subheader("🚑 Health Crisis Actions")
+    health_crisis_actions = {level: action_multiselect(f"Health Crisis {level}", actions) for level in levels}
+
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
 notification_placeholder = st.empty()
@@ -76,11 +101,18 @@ if monitoring:
         
         notifications = {"Stress": [], "Fatigue": [], "Health Crisis": []}
         
-        for category, risk_key in zip(["Stress", "Fatigue", "Health Crisis"],
-                                      ["Stress Level", "Fatigue Risk", "Health Crisis Risk"]):
+        for category, risk_key, action_dict in zip(
+            ["Stress", "Fatigue", "Health Crisis"],
+            ["Stress Level", "Fatigue Risk", "Health Crisis Risk"],
+            [stress_actions, fatigue_actions, health_crisis_actions]
+        ):
             current_level = fake_data[risk_key]
-            notifications[category].append(generate_notification(category, current_level))
-
+            selected_actions = action_dict.get(current_level, [])
+            
+            for action in selected_actions:
+                if action == "Send Notification":
+                    notifications[category].append(generate_notification(category, current_level))
+                
         with notification_placeholder.container():
             for category, notifs in notifications.items():
                 if notifs:
