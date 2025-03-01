@@ -36,19 +36,6 @@ st.markdown("""
             font-weight: bold;
             color: #00d4ff;
         }
-        .progress-container {
-            height: 10px;
-            background: #404040;
-            border-radius: 5px;
-            margin-top: 5px;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .progress-bar {
-            height: 100%;
-            border-radius: 5px;
-        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -56,22 +43,25 @@ st.markdown("""
 def generate_notification(category, level):
     messages = {
         "Stress": {
+            "Low": "✅ Normal Condition",
             "Moderate": "🟠 Moderate stress detected. Consider taking deep breaths.",
             "High": "🔴 High stress detected! Reduce distractions and focus on the road.",
             "Critical": "🚨 CRITICAL STRESS! Pull over safely and take a break."
         },
         "Fatigue": {
+            "Low": "✅ Normal Condition",
             "Moderate": "🟠 Moderate fatigue detected. Consider stretching or stopping soon.",
             "High": "🔴 High fatigue detected! Take a break immediately.",
             "Critical": "🚨 CRITICAL FATIGUE! Your reaction time is dangerously low. Stop now."
         },
         "Health Crisis": {
+            "Low": "✅ Normal Condition",
             "Moderate": "🟠 Mild health irregularity detected. Monitor your condition.",
             "High": "🔴 Significant health concern! Consider seeking medical attention.",
             "Critical": "🚨 EMERGENCY! Health crisis detected. Contact emergency services immediately."
         }
     }
-    return messages.get(category, {}).get(level, "✅ Normal Condition")
+    return messages.get(category, {}).get(level, "❌ Error: Unknown Condition")
 
 # Function to generate real-time biometric data
 def generate_fake_data():
@@ -135,10 +125,10 @@ if monitoring:
             current_level = fake_data[risk_key]
             selected_actions = action_dict.get(current_level, [])
             
+            if "Send Notification" in selected_actions:
+                notifications.append(generate_notification(category, current_level))
             for action in selected_actions:
-                if action == "Send Notification":
-                    notifications.append(generate_notification(category, current_level))
-                else:
+                if action != "Send Notification":
                     actions_taken.append(f"🚗 {action} activated due to {category} ({current_level})")
         
         with data_placeholder.container():
@@ -146,10 +136,10 @@ if monitoring:
         
         with notification_placeholder.container():
             if notifications:
-                st.markdown("<b>📢 Notifications:</b><br>" + "<br>".join(notifications), unsafe_allow_html=True)
+                st.markdown("**📢 Notifications:**<br>" + "<br>".join(notifications), unsafe_allow_html=True)
         
         with action_placeholder.container():
             if actions_taken:
-                st.markdown("<b>🚘 Vehicle Actions Taken:</b><br>" + "<br>".join(actions_taken), unsafe_allow_html=True)
+                st.markdown("**🚘 Vehicle Actions Taken:**<br>" + "<br>".join(actions_taken), unsafe_allow_html=True)
         
         time.sleep(3)
