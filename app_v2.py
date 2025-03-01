@@ -58,7 +58,7 @@ def generate_notification(category, level):
             "Critical": "🚨 EMERGENCY! Health crisis detected. Contact emergency services immediately."
         }
     }
-    return messages.get(category, {}).get(level, "")
+    return messages.get(category, {}).get(level, "✅ Normal Condition")
 
 # Function to generate real-time biometric data
 def generate_fake_data():
@@ -112,9 +112,9 @@ if monitoring:
             current_level = fake_data[risk_key]
             selected_actions = action_dict.get(current_level, [])
             
-            if current_level != "Low":  # Avoid showing normal condition unnecessarily
+            if current_level != "Low":
                 notification_msg = generate_notification(category, current_level)
-                if notification_msg:
+                if notification_msg and notification_msg != "✅ Normal Condition":
                     notifications.append(notification_msg)
             
             for action in selected_actions:
@@ -127,9 +127,13 @@ if monitoring:
         with notification_placeholder.container():
             if notifications:
                 st.markdown("**📢 Notifications:**<br>" + "<br>".join(notifications), unsafe_allow_html=True)
+            else:
+                st.markdown("**📢 Notifications:** No alerts detected.", unsafe_allow_html=True)
         
         with action_placeholder.container():
             if actions_taken:
                 st.markdown("**🚘 Vehicle Actions Taken:**<br>" + "<br>".join(actions_taken), unsafe_allow_html=True)
+            else:
+                st.markdown("**🚘 Vehicle Actions Taken:** No actions triggered.", unsafe_allow_html=True)
         
         time.sleep(3)
