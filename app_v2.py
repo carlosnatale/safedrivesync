@@ -16,6 +16,8 @@ st.markdown("""
         .main { background-color: #3a3a3a; color: white; }
         .stAlert { font-size: 16px; }
         .stButton>button { border-radius: 8px; padding: 10px; background: #007bff; color: white; border: none; }
+        .dashboard-container { display: flex; justify-content: space-between; padding: 10px; gap: 20px; }
+        .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 2px solid #ced4da; text-align: left; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -76,16 +78,18 @@ if monitoring:
         fake_data = generate_fake_data()
 
         with data_placeholder.container():
-            st.markdown(f"""
-                **Heart Rate:** {fake_data['Heart Rate (bpm)']} bpm  
-                **HRV:** {fake_data['HRV (ms)']} ms  
-                **SpO2:** {fake_data['SpO2 (%)']}%  
-                **Blood Pressure:** {fake_data['Blood Pressure']}  
-                **Blood Sugar:** {fake_data['Blood Sugar']} mg/dL  
-                **Motion Intensity:** {fake_data['Motion Intensity']}  
-                **Stress Level:** {fake_data['Stress Level']}  
-                **Fatigue Risk:** {fake_data['Fatigue Risk']}  
-                **Health Crisis Risk:** {fake_data['Health Crisis Risk']}  
+            st.markdown("""
+                <div class='dashboard-box'><b>📊 Health Data:</b><br>
+                ❤️ **Heart Rate:** {fake_data['Heart Rate (bpm)']} bpm<br>
+                📶 **HRV:** {fake_data['HRV (ms)']} ms<br>
+                🩸 **SpO2:** {fake_data['SpO2 (%)']}%<br>
+                🩺 **Blood Pressure:** {fake_data['Blood Pressure']}<br>
+                🍬 **Blood Sugar:** {fake_data['Blood Sugar']} mg/dL<br>
+                🏃 **Motion Intensity:** {fake_data['Motion Intensity']}<br>
+                ⚠️ **Stress Level:** {fake_data['Stress Level']}<br>
+                😴 **Fatigue Risk:** {fake_data['Fatigue Risk']}<br>
+                🚨 **Health Crisis Risk:** {fake_data['Health Crisis Risk']}<br>
+                </div>
             """, unsafe_allow_html=True)
         
         notifications = []
