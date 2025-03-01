@@ -114,30 +114,4 @@ with col2:
 
 with col3:
     st.subheader("🚑 Health Crisis Actions")
-    health_crisis_actions = {level: action_multiselect(f"Health Crisis {level}", actions) for level in levels}
-
-st.subheader("📊 Real-Time Driver Health Data")
-data_placeholder = st.empty()
-
-if monitoring:
-    while True:
-        fake_data = generate_fake_data()
-        with data_placeholder.container():
-            st.markdown('<div class="health-metrics">', unsafe_allow_html=True)
-            
-            for key, value in fake_data.items():
-                bar_color = "#00d4ff" if isinstance(value, int) and value < 80 else "#ffcc00" if value < 100 else "#ff4444"
-                progress_percentage = (int(value) if isinstance(value, int) else 50) / 150 * 100
-                
-                st.markdown(
-                    f'<div class="metric-box">'
-                    f'<div class="metric-title">{key}</div>'
-                    f'<div class="metric-value">{value}</div>'
-                    f'<div class="progress-container">'
-                    f'<div class="progress-bar" style="width: {progress_percentage}%; background: {bar_color};"></div>'
-                    f'</div>'
-                    f'</div>', unsafe_allow_html=True)
-                
-            st.markdown('</div>', unsafe_allow_html=True)
-        
-        time.sleep(3)
+    health_crisis_actions = {level: action_multiselect(f"Health Crisis {level}", actions) for le
