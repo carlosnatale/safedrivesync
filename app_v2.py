@@ -6,38 +6,48 @@ import time
 # Streamlit Configuration
 st.set_page_config(page_title="SafeDrive Sync", layout="wide")
 
-# Custom CSS for Mobile Optimization
+# Custom CSS for Improved Visualization
 st.markdown("""
     <style>
         .main { background-color: #3a3a3a; color: black; }
-        .stAlert { font-size: 16px; }
-        .stButton>button { border-radius: 8px; padding: 10px; background: #007bff; color: white; border: none; }
-        .dashboard-container { display: flex; justify-content: space-between; padding: 10px; gap: 20px; }
         .dashboard-box { flex: 1; padding: 15px; border-radius: 10px; background: #ffffff; margin: 10px; border: 2px solid #ced4da; text-align: left; }
-        .mobile-metrics {
+        .health-metrics {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            justify-content: center;
+            gap: 15px;
+            padding: 10px;
         }
         .metric-box {
-            background: linear-gradient(135deg, #f0f2f5, #d9e2ec);
+            background: #1e1e1e;
             padding: 15px;
             border-radius: 12px;
-            border: 1px solid #ced4da;
             text-align: center;
             box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+            color: white;
         }
         .metric-title {
             font-weight: bold;
-            font-size: 16px;
-            color: #495057;
+            font-size: 18px;
+            color: #f0f0f0;
             margin-bottom: 5px;
         }
         .metric-value {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
-            color: #007bff;
+            color: #00d4ff;
+        }
+        .progress-container {
+            height: 10px;
+            background: #404040;
+            border-radius: 5px;
+            margin-top: 5px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .progress-bar {
+            height: 100%;
+            border-radius: 5px;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -63,12 +73,9 @@ def generate_notification(category, level):
     }
     return messages.get(category, {}).get(level, "✅ Normal Condition")
 
-# Generate real-time biometric data
+# Function to generate real-time biometric data
 def generate_fake_data():
     levels = ['Low', 'Moderate', 'High', 'Critical']
-    health_crisis_probs = np.array([0.57, 0.23, 0.1, 0.1])
-    health_crisis_probs /= health_crisis_probs.sum()
-
     return {
         'Heart Rate (bpm)': np.random.randint(60, 110),
         'HRV (ms)': np.random.randint(20, 80),
@@ -77,8 +84,8 @@ def generate_fake_data():
         'Blood Sugar': np.random.randint(70, 140),
         'Motion Intensity': np.random.randint(0, 10),
         'Stress Level': np.random.choice(levels),
-        'Fatigue Risk': np.random.choice(levels, p=[0.5, 0.3, 0.15, 0.05]),
-        'Health Crisis Risk': np.random.choice(levels, p=health_crisis_probs)
+        'Fatigue Risk': np.random.choice(levels),
+        'Health Crisis Risk': np.random.choice(levels)
     }
 
 st.title("🚗 SafeDrive Sync - Health Dashboard")
@@ -111,45 +118,26 @@ with col3:
 
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
-action_placeholder = st.empty()
-notification_placeholder = st.empty()
+
 if monitoring:
     while True:
         fake_data = generate_fake_data()
-        
         with data_placeholder.container():
-            st.markdown('<div class="mobile-metrics">', unsafe_allow_html=True)
+            st.markdown('<div class="health-metrics">', unsafe_allow_html=True)
+            
             for key, value in fake_data.items():
+                bar_color = "#00d4ff" if isinstance(value, int) and value < 80 else "#ffcc00" if value < 100 else "#ff4444"
+                progress_percentage = (int(value) if isinstance(value, int) else 50) / 150 * 100
+                
                 st.markdown(
                     f'<div class="metric-box">'
                     f'<div class="metric-title">{key}</div>'
                     f'<div class="metric-value">{value}</div>'
+                    f'<div class="progress-container">'
+                    f'<div class="progress-bar" style="width: {progress_percentage}%; background: {bar_color};"></div>'
+                    f'</div>'
                     f'</div>', unsafe_allow_html=True)
+                
             st.markdown('</div>', unsafe_allow_html=True)
-        
-        # Handle actions and notifications
-        notifications = []
-        actions_taken = []
-        for category, risk_key, action_dict in zip(
-            ["Stress", "Fatigue", "Health Crisis"],
-            ["Stress Level", "Fatigue Risk", "Health Crisis Risk"],
-            [stress_actions, fatigue_actions, health_crisis_actions]
-        ):
-            current_level = fake_data[risk_key]
-            selected_actions = action_dict.get(current_level, [])
-            
-            for action in selected_actions:
-                if action == "Send Notification":
-                    notifications.append(generate_notification(category, current_level))
-                else:
-                    actions_taken.append(f"🚗 {action} activated due to {category} ({current_level})")
-        
-        with notification_placeholder.container():
-            if notifications:
-                st.markdown("<div class='dashboard-box'><b>📢 Notifications:</b><br>" + "<br>".join(notifications) + "</div>", unsafe_allow_html=True)
-        
-        with action_placeholder.container():
-            if actions_taken:
-                st.markdown("<div class='dashboard-box'><b>🚘 Vehicle Actions Taken:</b><br>" + "<br>".join(actions_taken) + "</div>", unsafe_allow_html=True)
         
         time.sleep(3)
