@@ -9,192 +9,200 @@ st.set_page_config(page_title="SafeDrive Sync", layout="wide")
 st.markdown("""
     <style>
         .main { background-color: #3a3a3a; color: white; }
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            padding: 10px;
+        }
         .health-card {
             background: white;
             border-radius: 15px;
-            padding: 15px;
-            margin: 10px 0;
+            padding: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             color: black;
         }
         .card-title {
-            font-size: 14px;
+            font-size: 16px;
             color: #666;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
         .card-value {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
             color: #007bff;
         }
         .status-indicator {
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 10px;
+            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 20px;
             display: inline-block;
         }
         @media (max-width: 600px) {
-            .card-value { font-size: 20px; }
-            .card-title { font-size: 13px; }
+            .health-grid { grid-template-columns: 1fr; }
+            .card-value { font-size: 24px; }
+            .card-title { font-size: 14px; }
         }
     </style>
 """, unsafe_allow_html=True)
 
-# Session State Initialization
+# Session State Management
 if 'health_data' not in st.session_state:
     st.session_state.health_data = None
     st.session_state.last_update = 0
 
 def generate_health_data():
-    """Generate fresh random health metrics"""
+    """Generate fresh random health metrics with realistic distributions"""
     levels = ['Low', 'Moderate', 'High', 'Critical']
     return {
-        'Heart Rate (bpm)': np.random.randint(60, 110),
-        'HRV (ms)': np.random.randint(20, 80),
-        'SpO2 (%)': np.random.randint(90, 100),
-        'Blood Pressure': f"{np.random.randint(90, 140)}/{np.random.randint(60, 90)}",
-        'Blood Sugar': np.random.randint(70, 140),
-        'Motion Intensity': np.random.randint(0, 10),
-        'Stress Level': np.random.choice(levels),
-        'Fatigue Risk': np.random.choice(levels, p=[0.5, 0.3, 0.15, 0.05]),
-        'Health Crisis Risk': np.random.choice(levels, p=[0.57, 0.23, 0.1, 0.1])
+        'heart_rate': np.random.randint(60, 110),
+        'hrv': np.random.randint(20, 80),
+        'spo2': np.random.randint(90, 100),
+        'blood_pressure': f"{np.random.randint(90, 140)}/{np.random.randint(60, 90)}",
+        'blood_sugar': np.random.randint(70, 140),
+        'motion': np.random.randint(0, 10),
+        'stress': np.random.choice(levels, p=[0.4, 0.3, 0.2, 0.1]),
+        'fatigue': np.random.choice(levels, p=[0.5, 0.3, 0.15, 0.05]),
+        'health_risk': np.random.choice(levels, p=[0.6, 0.25, 0.1, 0.05])
     }
 
-def update_metrics():
-    """Force UI refresh with new data"""
-    st.session_state.health_data = generate_health_data()
-    st.session_state.last_update = time.time()
+def create_metric_card(title, value, unit, color):
+    """Helper function to create consistent metric cards"""
+    return f"""
+        <div class="health-card">
+            <div class="card-title">{title}</div>
+            <div class="card-value">{value}</div>
+            <div class="status-indicator" style="background: {color[0]}; color: {color[1]};">{unit}</div>
+        </div>
+    """
 
 # Main App Interface
-st.title("🚗 SafeDrive Sync - Health Dashboard")
+st.title("🚗 SafeDrive Sync - Real-time Health Dashboard")
 
-# Auto-refresh control
-monitoring_enabled = st.toggle("Enable Real-Time Monitoring", value=True)
+# Control Panel
+with st.sidebar:
+    st.header("Settings")
+    monitoring_enabled = st.toggle("Enable Monitoring", True)
+    update_btn = st.button("Force Refresh")
 
-# Update data every 5 seconds
-if monitoring_enabled and (time.time() - st.session_state.last_update > 5):
-    update_metrics()
-    st.rerun()
+# Data Management
+if update_btn or (monitoring_enabled and (time.time() - st.session_state.last_update > 5)):
+    st.session_state.health_data = generate_health_data()
+    st.session_state.last_update = time.time()
+    if monitoring_enabled:
+        st.rerun()
 
-# Initialize data if not exists
 if st.session_state.health_data is None:
-    update_metrics()
+    st.session_state.health_data = generate_health_data()
 
-# Get current metrics
-current_data = st.session_state.health_data
+# Get current data
+data = st.session_state.health_data
 
-# Create placeholder containers
-placeholders = {
-    'hr': st.empty(),
-    'hrv': st.empty(),
-    'spo2': st.empty(),
-    'bp': st.empty(),
-    'sugar': st.empty(),
-    'risks': st.empty(),
-    'motion': st.empty()
-}
-
-# Update dashboard components
-with placeholders['hr'].container():
+# Main Dashboard Grid
+with st.container():
+    st.markdown('<div class="health-grid">', unsafe_allow_html=True)
+    
+    # Vital Signs
+    st.markdown(create_metric_card(
+        "❤️ Heart Rate", 
+        data['heart_rate'], 
+        "bpm", 
+        ("#e8f4ff", "#007bff")
+    ), unsafe_allow_html=True)
+    
+    st.markdown(create_metric_card(
+        "📶 HRV", 
+        data['hrv'], 
+        "ms", 
+        ("#fff5e6", "#ff9900")
+    ), unsafe_allow_html=True)
+    
+    st.markdown(create_metric_card(
+        "🩸 SpO2", 
+        f"{data['spo2']}%", 
+        "oxygen", 
+        ("#e6ffe6", "#00cc00")
+    ), unsafe_allow_html=True)
+    
+    # Blood Metrics
+    st.markdown(create_metric_card(
+        "🩺 Blood Pressure", 
+        data['blood_pressure'], 
+        "mmHg", 
+        ("#f8f9fa", "#6c757d")
+    ), unsafe_allow_html=True)
+    
+    st.markdown(create_metric_card(
+        "🍬 Blood Sugar", 
+        data['blood_sugar'], 
+        "mg/dL", 
+        ("#ffe6e6", "#ff3333")
+    ), unsafe_allow_html=True)
+    
+    # Risk Indicators
+    risk_colors = {
+        'Low': ("#e6ffe6", "#00cc00"),
+        'Moderate': ("#fff5e6", "#ff9900"),
+        'High': ("#ffe6e6", "#ff3333"),
+        'Critical': ("#ffebee", "#cc0000")
+    }
+    
     st.markdown(f"""
-        <div class='health-card'>
-            <div class='card-title'>❤️ Heart Rate</div>
-            <div class='card-value'>{current_data['Heart Rate (bpm)']}</div>
-            <div class='status-indicator' style='background: #e8f4ff; color: #007bff;'>bpm</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-with placeholders['hrv'].container():
-    st.markdown(f"""
-        <div class='health-card'>
-            <div class='card-title'>📶 HRV</div>
-            <div class='card-value'>{current_data['HRV (ms)']}</div>
-            <div class='status-indicator' style='background: #fff5e6; color: #ff9900;'>ms</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-with placeholders['spo2'].container():
-    st.markdown(f"""
-        <div class='health-card'>
-            <div class='card-title'>🩸 SpO2</div>
-            <div class='card-value'>{current_data['SpO2 (%)']}%</div>
-            <div class='status-indicator' style='background: #e6ffe6; color: #00cc00;'>oxygen</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-# Blood Pressure and Sugar
-with placeholders['bp'].container():
-    st.markdown(f"""
-        <div class='health-card'>
-            <div class='card-title'>🩺 Blood Pressure</div>
-            <div class='card-value' style='font-size: 22px;'>{current_data['Blood Pressure']}</div>
-            <div style='font-size: 12px; color: #666;'>mmHg</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-with placeholders['sugar'].container():
-    st.markdown(f"""
-        <div class='health-card'>
-            <div class='card-title'>🍬 Blood Sugar</div>
-            <div class='card-value'>{current_data['Blood Sugar']}</div>
-            <div class='status-indicator' style='background: #ffe6e6; color: #ff3333;'>mg/dL</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-# Risk Indicators
-risk_colors = {
-    'Low': '#00cc00',
-    'Moderate': '#ff9900',
-    'High': '#ff3333',
-    'Critical': '#cc0000'
-}
-
-with placeholders['risks'].container():
-    st.markdown(f"""
-        <div class='health-card'>
-            <div class='card-title'>⚠️ Risk Indicators</div>
-            <div style='display: grid; gap: 12px; margin-top: 10px;'>
-                <div style='display: flex; justify-content: space-between;'>
+        <div class="health-card">
+            <div class="card-title">⚠️ Risk Analysis</div>
+            <div style="display: grid; gap: 15px; margin-top: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span>Stress Level</span>
-                    <span style='color: {risk_colors[current_data['Stress Level']]};'>
-                        {current_data['Stress Level']}
-                    </span>
-                </div>
-                <div style='display: flex; justify-content: space-between;'>
-                    <span>Fatigue Risk</span>
-                    <span style='color: {risk_colors[current_data['Fatigue Risk']]};'>
-                        {current_data['Fatigue Risk']}
-                    </span>
-                </div>
-                <div style='display: flex; justify-content: space-between;'>
-                    <span>Health Crisis</span>
-                    <span style='color: {risk_colors[current_data['Health Crisis Risk']]};'>
-                        {current_data['Health Crisis Risk']}
-                    </span>
-                </div>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
-
-# Motion Intensity
-with placeholders['motion'].container():
-    st.markdown(f"""
-        <div class='health-card'>
-            <div class='card-title'>🏃 Motion Intensity</div>
-            <div style='display: flex; align-items: center; gap: 10px; margin-top: 8px;'>
-                <div style='flex-grow: 1; height: 8px; background: #f0f0f0; border-radius: 4px;'>
-                    <div style='width: {current_data['Motion Intensity']*10}%; 
-                        height: 100%; 
-                        background: #007bff; 
-                        border-radius: 4px;'>
+                    <div style="background: {risk_colors[data['stress']][0]}; 
+                        color: {risk_colors[data['stress']][1]};
+                        padding: 6px 12px;
+                        border-radius: 20px;">
+                        {data['stress']}
                     </div>
                 </div>
-                <div style='font-size: 16px; font-weight: bold;'>
-                    {current_data['Motion Intensity']}/10
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Fatigue Risk</span>
+                    <div style="background: {risk_colors[data['fatigue']][0]}; 
+                        color: {risk_colors[data['fatigue']][1]};
+                        padding: 6px 12px;
+                        border-radius: 20px;">
+                        {data['fatigue']}
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Health Crisis</span>
+                    <div style="background: {risk_colors[data['health_risk']][0]}; 
+                        color: {risk_colors[data['health_risk']][1]};
+                        padding: 6px 12px;
+                        border-radius: 20px;">
+                        {data['health_risk']}
+                    </div>
                 </div>
             </div>
         </div>
     """, unsafe_allow_html=True)
+    
+    # Motion Intensity
+    st.markdown(f"""
+        <div class="health-card">
+            <div class="card-title">🏃 Motion Intensity</div>
+            <div style="margin-top: 15px;">
+                <div style="height: 10px; background: #f0f0f0; border-radius: 5px;">
+                    <div style="width: {data['motion']*10}%; 
+                        height: 100%; 
+                        background: #007bff; 
+                        border-radius: 5px;
+                        transition: width 0.5s ease;">
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 10px; font-weight: bold;">
+                    {data['motion']}/10
+                </div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# Update timestamp
-st.caption(f"Last update: {time.strftime('%H:%M:%S', time.localtime(st.session_state.last_update))}")
+# Status Footer
+st.caption(f"Last update: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(st.session_state.last_update))}")
