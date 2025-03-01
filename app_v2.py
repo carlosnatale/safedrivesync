@@ -245,4 +245,4 @@ if monitoring:
             if actions_taken:
                 st.markdown("<div class='dashboard-box'><b>🚘 Vehicle Actions Taken:</b><br>" + "<br>".join(actions_taken) + "</div>", unsafe_allow_html=True)
 
-    st.experimental_rerun()
+    st.rerun()  # Updated rerun method here
