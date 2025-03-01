@@ -113,7 +113,10 @@ if monitoring:
             [stress_actions, fatigue_actions, health_crisis_actions]
         ):
             current_level = fake_data[risk_key]
-            selected_actions = action_dict.get(current_level, [])
+            if current_level in action_dict:
+                selected_actions = action_dict[current_level]
+            else:
+                selected_actions = []
             
             if "Send Notification" in selected_actions:
                 notifications.append(generate_notification(category, current_level))
