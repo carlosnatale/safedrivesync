@@ -89,22 +89,12 @@ actions = [
     "Adjust Seat Position", "Activate Horn", "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
 ]
 
-def action_multiselect(label, actions):
-    return st.multiselect(f"{label}", actions, default=["Send Notification"])
+def action_multiselect(label):
+    return st.multiselect(label, actions, default=["Send Notification"])
 
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.subheader("🧘 Stress Actions")
-    stress_actions = {level: action_multiselect(f"Stress {level}", actions) for level in levels}
-
-with col2:
-    st.subheader("😴 Fatigue Actions")
-    fatigue_actions = {level: action_multiselect(f"Fatigue {level}", actions) for level in levels}
-
-with col3:
-    st.subheader("🚑 Health Crisis Actions")
-    health_crisis_actions = {level: action_multiselect(f"Health Crisis {level}", actions) for level in levels}
+stress_actions = {level: action_multiselect(f"Stress {level}") for level in levels}
+fatigue_actions = {level: action_multiselect(f"Fatigue {level}") for level in levels}
+health_crisis_actions = {level: action_multiselect(f"Health Crisis {level}") for level in levels}
 
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
@@ -128,7 +118,7 @@ if monitoring:
             if "Send Notification" in selected_actions:
                 notifications.append(generate_notification(category, current_level))
             for action in selected_actions:
-                if action != "Send Notification":
+                if action != "No Action" and action != "Send Notification":
                     actions_taken.append(f"🚗 {action} activated due to {category} ({current_level})")
         
         with data_placeholder.container():
