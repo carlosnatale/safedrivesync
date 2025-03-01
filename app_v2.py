@@ -58,7 +58,7 @@ def generate_notification(category, level):
             "Critical": "🚨 EMERGENCY! Health crisis detected. Contact emergency services immediately."
         }
     }
-    return messages.get(category, {}).get(level, "✅ Normal Condition")
+    return messages.get(category, {}).get(level, "")
 
 # Function to generate real-time biometric data
 def generate_fake_data():
@@ -114,7 +114,7 @@ if monitoring:
             
             if current_level != "Low":
                 notification_msg = generate_notification(category, current_level)
-                if notification_msg and notification_msg != "✅ Normal Condition":
+                if notification_msg:
                     notifications.append(notification_msg)
             
             for action in selected_actions:
