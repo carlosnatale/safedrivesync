@@ -118,13 +118,15 @@ with col3:
 
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
+notification_placeholder = st.empty()
 
 if monitoring:
     while True:
         fake_data = generate_fake_data()
+        notifications = []
+        
         with data_placeholder.container():
             st.markdown('<div class="health-metrics">', unsafe_allow_html=True)
-            
             for key, value in fake_data.items():
                 if isinstance(value, int):
                     bar_color = "#00d4ff" if value < 80 else "#ffcc00" if value < 100 else "#ff4444"
@@ -138,12 +140,16 @@ if monitoring:
                         f'</div>'
                         f'</div>', unsafe_allow_html=True)
                 else:
+                    notifications.append(generate_notification(key, value))
                     st.markdown(
                         f'<div class="metric-box">'
                         f'<div class="metric-title">{key}</div>'
                         f'<div class="metric-value">{value}</div>'
                         f'</div>', unsafe_allow_html=True)
-            
             st.markdown('</div>', unsafe_allow_html=True)
+        
+        with notification_placeholder.container():
+            if notifications:
+                st.markdown("<b>📢 Notifications:</b><br>" + "<br>".join(notifications), unsafe_allow_html=True)
         
         time.sleep(3)
