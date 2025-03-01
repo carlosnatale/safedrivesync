@@ -43,25 +43,22 @@ st.markdown("""
 def generate_notification(category, level):
     messages = {
         "Stress": {
-            "Low": "✅ Normal Condition",
             "Moderate": "🟠 Moderate stress detected. Consider taking deep breaths.",
             "High": "🔴 High stress detected! Reduce distractions and focus on the road.",
             "Critical": "🚨 CRITICAL STRESS! Pull over safely and take a break."
         },
         "Fatigue": {
-            "Low": "✅ Normal Condition",
             "Moderate": "🟠 Moderate fatigue detected. Consider stretching or stopping soon.",
             "High": "🔴 High fatigue detected! Take a break immediately.",
             "Critical": "🚨 CRITICAL FATIGUE! Your reaction time is dangerously low. Stop now."
         },
         "Health Crisis": {
-            "Low": "✅ Normal Condition",
             "Moderate": "🟠 Mild health irregularity detected. Monitor your condition.",
             "High": "🔴 Significant health concern! Consider seeking medical attention.",
             "Critical": "🚨 EMERGENCY! Health crisis detected. Contact emergency services immediately."
         }
     }
-    return messages.get(category, {}).get(level, "❌ Error: Unknown Condition")
+    return messages.get(category, {}).get(level, "")
 
 # Function to generate real-time biometric data
 def generate_fake_data():
@@ -113,15 +110,15 @@ if monitoring:
             [stress_actions, fatigue_actions, health_crisis_actions]
         ):
             current_level = fake_data[risk_key]
-            if current_level in action_dict:
-                selected_actions = action_dict[current_level]
-            else:
-                selected_actions = []
+            selected_actions = action_dict.get(current_level, [])
             
-            if "Send Notification" in selected_actions:
-                notifications.append(generate_notification(category, current_level))
+            if current_level != "Low":  # Avoid showing normal condition unnecessarily
+                notification_msg = generate_notification(category, current_level)
+                if notification_msg:
+                    notifications.append(notification_msg)
+            
             for action in selected_actions:
-                if action != "No Action" and action != "Send Notification":
+                if action != "No Action":
                     actions_taken.append(f"🚗 {action} activated due to {category} ({current_level})")
         
         with data_placeholder.container():
