@@ -119,37 +119,37 @@ with col3:
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
 notification_placeholder = st.empty()
+action_placeholder = st.empty()
 
 if monitoring:
     while True:
         fake_data = generate_fake_data()
         notifications = []
+        actions_taken = []
+        
+        for category, risk_key, action_dict in zip(
+            ["Stress", "Fatigue", "Health Crisis"],
+            ["Stress Level", "Fatigue Risk", "Health Crisis Risk"],
+            [stress_actions, fatigue_actions, health_crisis_actions]
+        ):
+            current_level = fake_data[risk_key]
+            selected_actions = action_dict.get(current_level, [])
+            
+            for action in selected_actions:
+                if action == "Send Notification":
+                    notifications.append(generate_notification(category, current_level))
+                else:
+                    actions_taken.append(f"🚗 {action} activated due to {category} ({current_level})")
         
         with data_placeholder.container():
-            st.markdown('<div class="health-metrics">', unsafe_allow_html=True)
-            for key, value in fake_data.items():
-                if isinstance(value, int):
-                    bar_color = "#00d4ff" if value < 80 else "#ffcc00" if value < 100 else "#ff4444"
-                    progress_percentage = value / 150 * 100
-                    st.markdown(
-                        f'<div class="metric-box">'
-                        f'<div class="metric-title">{key}</div>'
-                        f'<div class="metric-value">{value}</div>'
-                        f'<div class="progress-container">'
-                        f'<div class="progress-bar" style="width: {progress_percentage}%; background: {bar_color};"></div>'
-                        f'</div>'
-                        f'</div>', unsafe_allow_html=True)
-                else:
-                    notifications.append(generate_notification(key, value))
-                    st.markdown(
-                        f'<div class="metric-box">'
-                        f'<div class="metric-title">{key}</div>'
-                        f'<div class="metric-value">{value}</div>'
-                        f'</div>', unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.write(fake_data)
         
         with notification_placeholder.container():
             if notifications:
                 st.markdown("<b>📢 Notifications:</b><br>" + "<br>".join(notifications), unsafe_allow_html=True)
+        
+        with action_placeholder.container():
+            if actions_taken:
+                st.markdown("<b>🚘 Vehicle Actions Taken:</b><br>" + "<br>".join(actions_taken), unsafe_allow_html=True)
         
         time.sleep(3)
