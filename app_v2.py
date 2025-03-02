@@ -42,30 +42,30 @@ monitoring = st.toggle("Enable Real-Time Monitoring", value=True)
 st.subheader("📊 Real-Time Driver Health Data")
 data_placeholder = st.empty()
 
-if monitoring:
-    while True:
-        fake_data = generate_fake_data()
-        
-        # Define risk level colors
-        risk_colors = {
-            'Low': "risk-low",
-            'Moderate': "risk-moderate",
-            'High': "risk-high",
-            'Critical': "risk-critical"
-        }
-        
-        with data_placeholder:
-            st.markdown("<div class='dashboard-container'>", unsafe_allow_html=True)
-            for key, value in fake_data.items():
-                risk_class = risk_colors.get(value, "") if key in ["Stress Level", "Fatigue Risk", "Health Crisis Risk"] else ""
-                st.markdown(
-                    f"""
-                    <div class='dashboard-card'>
-                        <div class='card-title'>{key}</div>
-                        <div class='card-value {risk_class}'>{value}</div>
-                    </div>
-                    """, unsafe_allow_html=True
-                )
-            st.markdown("</div>", unsafe_allow_html=True)
-
-        time.sleep(3)
+while monitoring:
+    fake_data = generate_fake_data()
+    
+    # Define risk level colors
+    risk_colors = {
+        'Low': "risk-low",
+        'Moderate': "risk-moderate",
+        'High': "risk-high",
+        'Critical': "risk-critical"
+    }
+    
+    with data_placeholder.container():
+        st.markdown("<div class='dashboard-container'>", unsafe_allow_html=True)
+        for key, value in fake_data.items():
+            risk_class = risk_colors.get(value, "") if key in ["Stress Level", "Fatigue Risk", "Health Crisis Risk"] else ""
+            st.markdown(
+                f"""
+                <div class='dashboard-card'>
+                    <div class='card-title'>{key}</div>
+                    <div class='card-value {risk_class}'>{value}</div>
+                </div>
+                """, unsafe_allow_html=True
+            )
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    time.sleep(3)
+    st.rerun()
