@@ -84,7 +84,7 @@ def generate_fake_data():
         'SpO2 (%)': np.random.randint(90, 100),
         'Blood Pressure (mmHg)': f"{np.random.randint(90, 140)}/{np.random.randint(60, 90)}",
         'Blood Sugar (mg/dL)': np.random.randint(70, 140),
-        'Body Temperature': np.random.randint(35, 40),
+        'Body Temperature': np.random.randint(0, 10),
         'Stress Level': np.random.choice(levels),
         'Fatigue Risk': np.random.choice(levels, p=[0.5, 0.3, 0.15, 0.05]),
         'Health Crisis Risk': np.random.choice(levels, p=health_crisis_probs)
@@ -183,7 +183,7 @@ if monitoring:
             with col5:
                 st.markdown(f"""
                 <div class='dashboard-box'>
-                    <h3 style='margin:0; color: #2c3e50;'>🏃 Motion Intensity</h3>
+                    <h3 style='margin:0; color: #2c3e50;'>🏃 Body Temperature</h3>
                     <div style='display: flex; align-items: center; gap: 15px;'>
                         <div style='font-size: 42px; font-weight: bold; color: #e74c3c;'>{fake_data['Body Temperature']}</div>
                         <div style='width: 100%; background: #eee; height: 10px; border-radius: 5px;'>
