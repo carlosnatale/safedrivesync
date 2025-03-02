@@ -51,8 +51,45 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Notification generator and data functions remain the same
-# ... [Keep the existing generate_notification and generate_fake_data functions] ...
+# Restored function
+def generate_notification(category, level):
+    messages = {
+        "Stress": {
+            "Moderate": "🟠 Moderate stress detected. Consider taking deep breaths.",
+            "High": "🔴 High stress detected! Reduce distractions and focus on the road.",
+            "Critical": "🚨 CRITICAL STRESS! Pull over safely and take a break."
+        },
+        "Fatigue": {
+            "Moderate": "🟠 Moderate fatigue detected. Consider stretching or stopping soon.",
+            "High": "🔴 High fatigue detected! Take a break immediately.",
+            "Critical": "🚨 CRITICAL FATIGUE! Your reaction time is dangerously low. Stop now."
+        },
+        "Health Crisis": {
+            "Moderate": "🟠 Mild health irregularity detected. Monitor your condition.",
+            "High": "🔴 Significant health concern! Consider seeking medical attention.",
+            "Critical": "🚨 EMERGENCY! Health crisis detected. Contact emergency services immediately."
+        }
+    }
+    return messages.get(category, {}).get(level, "✅ Normal Condition")
+
+# Restored critical function
+def generate_fake_data():
+    levels = ['Low', 'Moderate', 'High', 'Critical']
+    health_crisis_probs = np.array([0.57, 0.23, 0.1, 0.1])
+    health_crisis_probs /= health_crisis_probs.sum()
+
+    return {
+        'Heart Rate (bpm)': np.random.randint(60, 110),
+        'HRV (ms)': np.random.randint(20, 80),
+        'SpO2 (%)': np.random.randint(90, 100),
+        'Blood Pressure (mmHg)': f"{np.random.randint(90, 140)}/{np.random.randint(60, 90)}",
+        'Blood Sugar (mg/dL)': np.random.randint(70, 140),
+        'Motion Intensity': np.random.randint(0, 10),
+        'Stress Level': np.random.choice(levels),
+        'Fatigue Risk': np.random.choice(levels, p=[0.5, 0.3, 0.15, 0.05]),
+        'Health Crisis Risk': np.random.choice(levels, p=health_crisis_probs)
+    }
+
 
 st.title("🚗 SafeDrive Sync - Health Dashboard")
 monitoring = st.toggle("Enable Real-Time Monitoring", value=True)
