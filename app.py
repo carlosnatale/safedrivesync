@@ -111,7 +111,7 @@ if monitoring:
             with col1:
                 st.markdown(f"""
                 <div class='dashboard-box' style='border-left: 5px solid #4CAF50;'>
-                    <h3 style='margin:0; color: #2c3e50;'>❤️ Frequência Cardíaca</h3>
+                    <h3 style='margin:0; color: #2c3e50;'>❤️ Heart Rate</h3>
                     <div style='display: flex; align-items: baseline; gap: 10px;'>
                         <span style='font-size: 34px; font-weight: bold; color: #2c3e50;'>{fake_data['Heart Rate (bpm)']}</span>
                         <span style='font-size: 16px; color: #7f8c8d;'>bpm</span>
@@ -128,7 +128,7 @@ if monitoring:
                         <span style='font-size: 34px; font-weight: bold; color: #2c3e50;'>{fake_data['HRV (ms)']}</span>
                         <span style='font-size: 16px; color: #7f8c8d;'>ms</span>
                     </div>
-                    <div style='color: #2196F3; font-weight: 500;'>Variabilidade</div>
+                    <div style='color: #2196F3; font-weight: 500;'>Variability</div>
                 </div>
                 """, unsafe_allow_html=True)
                 
@@ -140,16 +140,16 @@ if monitoring:
                         <span style='font-size: 34px; font-weight: bold; color: #2c3e50;'>{fake_data['SpO2 (%)']}</span>
                         <span style='font-size: 16px; color: #7f8c8d;'>%</span>
                     </div>
-                    <div style='color: #9C27B0; font-weight: 500;'>Oxigenação</div>
+                    <div style='color: #9C27B0; font-weight: 500;'>Oxygen</div>
                 </div>
                 """, unsafe_allow_html=True)
                 
             with col4:
                 st.markdown(f"""
                 <div class='dashboard-box' style='border-left: 5px solid #FF9800;'>
-                    <h3 style='margin:0; color: #2c3e50;'>🩸 Pressão Arterial</h3>
+                    <h3 style='margin:0; color: #2c3e50;'>🩸 Blood pressure</h3>
                     <div style='font-size: 34px; font-weight: bold; color: #2c3e50;'>{fake_data['Blood Pressure (mmHg)']}</div>
-                    <div style='color: #FF9800; font-weight: 500;'>Medição Contínua</div>
+                    <div style='color: #FF9800; font-weight: 500;'>Continuous measurement</div>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -158,7 +158,7 @@ if monitoring:
             with col5:
                 st.markdown(f"""
                 <div class='dashboard-box'>
-                    <h3 style='margin:0; color: #2c3e50;'>🏃 Intensidade de Movimento</h3>
+                    <h3 style='margin:0; color: #2c3e50;'>🏃 Motion Intensity</h3>
                     <div style='display: flex; align-items: center; gap: 15px;'>
                         <div style='font-size: 42px; font-weight: bold; color: #e74c3c;'>{fake_data['Motion Intensity']}</div>
                         <div style='width: 100%; background: #eee; height: 10px; border-radius: 5px;'>
@@ -172,7 +172,7 @@ if monitoring:
                 stress_color = {"Low": "#2ecc71", "Moderate": "#f1c40f", "High": "#e67e22", "Critical": "#e74c3c"}[fake_data['Stress Level']]
                 st.markdown(f"""
                 <div class='dashboard-box'>
-                    <h3 style='margin:0; color: #2c3e50;'>🧠 Nível de Estresse</h3>
+                    <h3 style='margin:0; color: #2c3e50;'>🧠 Stress Level</h3>
                     <div style='display: flex; align-items: center; gap: 15px;'>
                         <div style='font-size: 32px; color: {stress_color};'>""" +
                         {"Low": "😊", "Moderate": "😐", "High": "😣", "Critical": "😡"}[fake_data['Stress Level']] +
@@ -188,7 +188,7 @@ if monitoring:
                 risk_color = {"Low": "#2ecc71", "Moderate": "#f1c40f", "High": "#e67e22", "Critical": "#e74c3c"}[fake_data['Health Crisis Risk']]
                 st.markdown(f"""
                 <div class='dashboard-box'>
-                    <h3 style='margin:0; color: #2c3e50;'>⚕️ Risco de Crise</h3>
+                    <h3 style='margin:0; color: #2c3e50;'>⚕️ Health Crisis Risk</h3>
                     <div style='display: flex; align-items: center; justify-content: space-between;'>
                         <div style='font-size: 32px; color: {risk_color};'>⚠️</div>
                         <div style='font-size: 24px; font-weight: bold; color: {risk_color};'>
