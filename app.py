@@ -183,7 +183,7 @@ if monitoring:
             with col5:
                 st.markdown(f"""
                 <div class='dashboard-box'>
-                    <h3 style='margin:0; color: #2c3e50;'>🏃 Body Temperature</h3>
+                    <h3 style='margin:0; color: #2c3e50;'>🌡️ Body Temperature</h3>
                     <div style='display: flex; align-items: center; gap: 15px;'>
                         <div style='font-size: 42px; font-weight: bold; color: #e74c3c;'>{fake_data['Body Temperature']}</div>
                         <div style='width: 100%; background: #eee; height: 10px; border-radius: 5px;'>
