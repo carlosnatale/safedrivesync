@@ -179,7 +179,7 @@ if monitoring:
                 """, unsafe_allow_html=True)
 
             # Second row - Other Metrics
-            col5, col6, col7 = st.columns(3)
+            col5, col6, col7, col8 = st.columns(4)
             with col5:
                 st.markdown(f"""
                 <div class='dashboard-box'>
@@ -225,7 +225,7 @@ if monitoring:
                 </div>
                 """, unsafe_allow_html=True)
                 
-            with col18:
+            with col8:
                 risk_color = {"Low": "#2ecc71", "Moderate": "#f1c40f", "High": "#e67e22", "Critical": "#e74c3c"}[fake_data['Health Crisis Risk']]
                 st.markdown(f"""
                 <div class='dashboard-box'>
