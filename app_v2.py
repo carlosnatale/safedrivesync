@@ -318,7 +318,7 @@ if monitoring:
     
     # Fixed refresh mechanism
     time.sleep(5)
-    st.experimental_rerun()
+    st.rerun()
 
 # Add this to handle first run when monitoring is off
 else:
