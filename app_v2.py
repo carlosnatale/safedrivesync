@@ -6,7 +6,7 @@ import time
 # Streamlit configuration
 st.set_page_config(page_title="SafeDrive Sync", layout="wide")
 
-# Custom CSS with color coding
+# Custom CSS with working color coding
 st.markdown("""
     <style>
         .main { background-color: #3a3a3a; color: black; }
@@ -50,30 +50,34 @@ st.markdown("""
         .status-text { margin-left: 28px; }
 
         /* Multiselect Color Coding */
-        [title*="Low"] [aria-selected="true"] { /* Green */
+        div[data-baseweb="select"] [aria-selected="true"] {
             background-color: #28a745 !important;
             color: white !important;
         }
-        [title*="Moderate"] [aria-selected="true"] { /* Light Green */
+        div[data-baseweb="select"] [aria-selected="true"][title*="Moderate"] {
             background-color: #90EE90 !important;
             color: #2c3e50 !important;
         }
-        [title*="High"] [aria-selected="true"] { /* Orange */
+        div[data-baseweb="select"] [aria-selected="true"][title*="High"] {
             background-color: #FFA500 !important;
             color: white !important;
         }
-        [title*="Critical"] [aria-selected="true"] { /* Red */
+        div[data-baseweb="select"] [aria-selected="true"][title*="Critical"] {
             background-color: #dc3545 !important;
             color: white !important;
         }
-        .stMultiSelect div[role="option"]:hover {
-            background-color: #f8f9fa !important;
-        }
-        .stMultiSelect:focus-within {
-            box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.25) !important;
-        }
     </style>
 """, unsafe_allow_html=True)
+
+# Session state initialization
+if 'fake_data' not in st.session_state:
+    st.session_state.fake_data = None
+if 'actions' not in st.session_state:
+    st.session_state.actions = {
+        'stress': {'Low': ["Send Notification"], 'Moderate': [], 'High': [], 'Critical': []},
+        'fatigue': {'Low': ["Send Notification"], 'Moderate': [], 'High': [], 'Critical': []},
+        'health': {'Low': ["Send Notification"], 'Moderate': [], 'High': [], 'Critical': []}
+    }
 
 # Notification generator
 def generate_notification(category, level):
@@ -126,22 +130,30 @@ actions = [
     "Call Emergency Services", "Activate Autopilot", "Flash Alert Lights"
 ]
 
-def action_multiselect(label, actions):
-    return st.multiselect(f"{label}", actions, default=["Send Notification"])
+def action_multiselect(label, category, level):
+    return st.multiselect(
+        label,
+        actions,
+        default=st.session_state.actions[category][level],
+        key=f"{category}_{level}"
+    )
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
     st.subheader("🧘 Stress Actions")
-    stress_actions = {level: action_multiselect(f"Stress {level}", actions) for level in levels}
+    for level in levels:
+        st.session_state.actions['stress'][level] = action_multiselect(f"Stress {level}", 'stress', level)
 
 with col2:
     st.subheader("😴 Fatigue Actions")
-    fatigue_actions = {level: action_multiselect(f"Fatigue {level}", actions) for level in levels}
+    for level in levels:
+        st.session_state.actions['fatigue'][level] = action_multiselect(f"Fatigue {level}", 'fatigue', level)
 
 with col3:
     st.subheader("🚑 Health Crisis Actions")
-    health_crisis_actions = {level: action_multiselect(f"Health Crisis {level}", actions) for level in levels}
+    for level in levels:
+        st.session_state.actions['health'][level] = action_multiselect(f"Health Crisis {level}", 'health', level)
 
 # Real-Time Data Display
 st.subheader("📊 Real-Time Driver Health Data")
@@ -150,7 +162,7 @@ action_placeholder = st.empty()
 notification_placeholder = st.empty()
 
 if monitoring:
-    fake_data = generate_fake_data()
+    st.session_state.fake_data = generate_fake_data()
     
     # Health Metrics Visualization
     with data_placeholder.container():
@@ -161,7 +173,7 @@ if monitoring:
             <div class='dashboard-box' style='border-left: 5px solid #4CAF50;'>
                 <h3 style='margin:0; color: #2c3e50;'>❤️ Heart Rate</h3>
                 <div style='display: flex; align-items: baseline; gap: 10px;'>
-                    <span style='font-size: 34px; font-weight: bold; color: #2c3e50;'>{fake_data['Heart Rate (bpm)']}</span>
+                    <span style='font-size: 34px; font-weight: bold; color: #2c3e50;'>{st.session_state.fake_data['Heart Rate (bpm)']}</span>
                     <span style='font-size: 16px; color: #7f8c8d;'>bpm</span>
                 </div>
                 <div style='color: #4CAF50; font-weight: 500;'>Normal</div>
@@ -173,7 +185,7 @@ if monitoring:
             <div class='dashboard-box' style='border-left: 5px solid #2196F3;'>
                 <h3 style='margin:0; color: #2c3e50;'>🔄 HRV</h3>
                 <div style='display: flex; align-items: baseline; gap: 10px;'>
-                    <span style='font-size: 34px; font-weight: bold; color: #2c3e50;'>{fake_data['HRV (ms)']}</span>
+                    <span style='font-size: 34px; font-weight: bold; color: #2c3e50;'>{st.session_state.fake_data['HRV (ms)']}</span>
                     <span style='font-size: 16px; color: #7f8c8d;'>ms</span>
                 </div>
                 <div style='color: #2196F3; font-weight: 500;'>Variability</div>
@@ -185,7 +197,7 @@ if monitoring:
             <div class='dashboard-box' style='border-left: 5px solid #9C27B0;'>
                 <h3 style='margin:0; color: #2c3e50;'>🩸 SpO2</h3>
                 <div style='display: flex; align-items: baseline; gap: 10px;'>
-                    <span style='font-size: 34px; font-weight: bold; color: #2c3e50;'>{fake_data['SpO2 (%)']}</span>
+                    <span style='font-size: 34px; font-weight: bold; color: #2c3e50;'>{st.session_state.fake_data['SpO2 (%)']}</span>
                     <span style='font-size: 16px; color: #7f8c8d;'>%</span>
                 </div>
                 <div style='color: #9C27B0; font-weight: 500;'>Oxygenation</div>
@@ -196,7 +208,7 @@ if monitoring:
             st.markdown(f"""
             <div class='dashboard-box' style='border-left: 5px solid #FF9800;'>
                 <h3 style='margin:0; color: #2c3e50;'>🩸 Blood Pressure</h3>
-                <div style='font-size: 34px; font-weight: bold; color: #2c3e50;'>{fake_data['Blood Pressure (mmHg)']}</div>
+                <div style='font-size: 34px; font-weight: bold; color: #2c3e50;'>{st.session_state.fake_data['Blood Pressure (mmHg)']}</div>
                 <div style='color: #FF9800; font-weight: 500;'>Continuous Monitoring</div>
             </div>
             """, unsafe_allow_html=True)
@@ -208,55 +220,55 @@ if monitoring:
             <div class='dashboard-box'>
                 <h3 style='margin:0; color: #2c3e50;'>🌡️ Body Temperature</h3>
                 <div style='display: flex; align-items: center; gap: 15px;'>
-                    <div style='font-size: 42px; font-weight: bold; color: #e74c3c;'>{fake_data['Body Temperature']}</div>
+                    <div style='font-size: 42px; font-weight: bold; color: #e74c3c;'>{st.session_state.fake_data['Body Temperature']}</div>
                     <div style='width: 100%; background: #eee; height: 10px; border-radius: 5px;'>
-                        <div style='width: {fake_data['Body Temperature']*2}%; background: #e74c3c; height: 10px; border-radius: 5px;'></div>
+                        <div style='width: {st.session_state.fake_data['Body Temperature']*2}%; background: #e74c3c; height: 10px; border-radius: 5px;'></div>
                     </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
             
         with col6:
-            stress_color = {"Low": "#2ecc71", "Moderate": "#f1c40f", "High": "#e67e22", "Critical": "#e74c3c"}[fake_data['Stress Level']]
+            stress_color = {"Low": "#2ecc71", "Moderate": "#f1c40f", "High": "#e67e22", "Critical": "#e74c3c"}[st.session_state.fake_data['Stress Level']]
             st.markdown(f"""
             <div class='dashboard-box'>
                 <h3 style='margin:0; color: #2c3e50;'>🧠 Stress Level</h3>
                 <div style='display: flex; align-items: center; gap: 15px;'>
                     <div style='font-size: 32px; color: {stress_color};'>""" +
-                    {"Low": "😊", "Moderate": "😐", "High": "😣", "Critical": "😡"}[fake_data['Stress Level']] +
+                    {"Low": "😊", "Moderate": "😐", "High": "😣", "Critical": "😡"}[st.session_state.fake_data['Stress Level']] +
                     f"""</div>
                     <div style='font-size: 24px; font-weight: bold; color: {stress_color};'>
-                        {fake_data['Stress Level']}
+                        {st.session_state.fake_data['Stress Level']}
                     </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
             
         with col7:
-            fatigue_color = {"Low": "#2ecc71", "Moderate": "#f1c40f", "High": "#e67e22", "Critical": "#e74c3c"}[fake_data['Fatigue Risk']]
+            fatigue_color = {"Low": "#2ecc71", "Moderate": "#f1c40f", "High": "#e67e22", "Critical": "#e74c3c"}[st.session_state.fake_data['Fatigue Risk']]
             st.markdown(f"""
             <div class='dashboard-box'>
                 <h3 style='margin:0; color: #2c3e50;'>💤 Fatigue Risk</h3>
                 <div style='display: flex; align-items: center; gap: 15px;'>
                     <div style='font-size: 32px; color: {fatigue_color};'>""" +
-                    {"Low": "😃", "Moderate": "😑", "High": "🥱", "Critical": "😴"}[fake_data['Fatigue Risk']] +
+                    {"Low": "😃", "Moderate": "😑", "High": "🥱", "Critical": "😴"}[st.session_state.fake_data['Fatigue Risk']] +
                     f"""</div>
                     <div style='font-size: 24px; font-weight: bold; color: {fatigue_color};'>
-                        {fake_data['Fatigue Risk']}
+                        {st.session_state.fake_data['Fatigue Risk']}
                     </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
             
         with col8:
-            risk_color = {"Low": "#2ecc71", "Moderate": "#f1c40f", "High": "#e67e22", "Critical": "#e74c3c"}[fake_data['Health Crisis Risk']]
+            risk_color = {"Low": "#2ecc71", "Moderate": "#f1c40f", "High": "#e67e22", "Critical": "#e74c3c"}[st.session_state.fake_data['Health Crisis Risk']]
             st.markdown(f"""
             <div class='dashboard-box'>
                 <h3 style='margin:0; color: #2c3e50;'>⚕️ Health Crisis Risk</h3>
                 <div style='display: flex; align-items: center; gap: 15px;'>
                     <div style='font-size: 32px; color: {risk_color};'>⚠️</div>
                     <div style='font-size: 24px; font-weight: bold; color: {risk_color};'>
-                        {fake_data['Health Crisis Risk']}
+                        {st.session_state.fake_data['Health Crisis Risk']}
                     </div>
                 </div>
             </div>
@@ -269,9 +281,9 @@ if monitoring:
     for category, risk_key, action_dict in zip(
         ["Stress", "Fatigue", "Health Crisis"],
         ["Stress Level", "Fatigue Risk", "Health Crisis Risk"],
-        [stress_actions, fatigue_actions, health_crisis_actions]
+        [st.session_state.actions['stress'], st.session_state.actions['fatigue'], st.session_state.actions['health']]
     ):
-        current_level = fake_data[risk_key]
+        current_level = st.session_state.fake_data[risk_key]
         selected_actions = action_dict.get(current_level, [])
         
         for action in selected_actions:
@@ -334,17 +346,3 @@ if monitoring:
                         {', '.join(notifs) if notifs else 'Normal condition'}
                     </div>
                 </div>"""
-                for category, notifs in notifications.items()
-            ])}
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Refresh mechanism
-    time.sleep(5)
-    st.rerun()
-
-else:
-    data_placeholder.empty()
-    action_placeholder.empty()
-    notification_placeholder.empty()
