@@ -213,10 +213,10 @@ if monitoring:
                 fatigue_color = {"Low": "#2ecc71", "Moderate": "#f1c40f", "High": "#e67e22", "Critical": "#e74c3c"}[fake_data['Fatigue Risk']]
                 st.markdown(f"""
                 <div class='dashboard-box'>
-                    <h3 style='margin:0; color: #2c3e50;'>🧠 Fatigue Risk</h3>
+                    <h3 style='margin:0; color: #2c3e50;'>💤 Fatigue Risk</h3>
                     <div style='display: flex; align-items: center; gap: 15px;'>
                         <div style='font-size: 32px; color: {fatigue_color};'>""" +
-                        {"Low": "😊", "Moderate": "😐", "High": "😣", "Critical": "😡"}[fake_data['Fatigue Risk']] +
+                        {"Low": "😃", "Moderate": "😑", "High": "🥱", "Critical": "😴"}[fake_data['Fatigue Risk']] +
                         f"""</div>
                         <div style='font-size: 24px; font-weight: bold; color: {fatigue_color};'>
                             {fake_data['Fatigue Risk']}
