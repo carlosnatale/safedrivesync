@@ -6,56 +6,71 @@ import time
 # Streamlit configuration
 st.set_page_config(page_title="SafeDrive Sync", layout="wide")
 
+# Custom CSS with color coding
 st.markdown("""
     <style>
-        /* Stress Low */
-        .stMultiSelect [title*="Stress Low"] [aria-selected="true"] {
-            background-color: #28a745 !important;
-            color: white !important;
+        .main { background-color: #3a3a3a; color: black; }
+        .stAlert { font-size: 16px; }
+        .stButton>button { border-radius: 8px; padding: 10px; background: #007bff; color: white; border: none; }
+        .stDataFrame { background-color: white; color: black; border-radius: 10px; padding: 10px; }
+        .stSidebar { background: #e9ecef; }
+        .dashboard-container { display: flex; justify-content: space-between; padding: 10px; gap: 20px; }
+        .dashboard-box { 
+            flex: 1; 
+            padding: 20px; 
+            border-radius: 10px; 
+            background: #ffffff; 
+            margin: 10px; 
+            border: 2px solid #ced4da; 
+            text-align: left;
+            transition: transform 0.2s ease;
         }
-        
-        /* Fatigue Low */
-        .stMultiSelect [title*="Fatigue Low"] [aria-selected="true"] {
-            background-color: #28a745 !important;
-            color: white !important;
+        .dashboard-box:hover { transform: translateY(-3px); }
+        .action-box { border-left: 4px solid #004085; }
+        .notification-box { border-left: 4px solid #dc3545; }
+        .alert-title { 
+            font-weight: bold; 
+            font-size: 22px; 
+            margin-bottom: 15px; 
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        
-        /* Health Crisis Low */
-        .stMultiSelect [title*="Health Crisis Low"] [aria-selected="true"] {
-            background-color: #28a745 !important;
-            color: white !important;
+        .status-item { margin-bottom: 15px; }
+        .status-indicator { font-size: 18px; margin-right: 8px; }
+        .metric-header { 
+            font-size: 18px !important; 
+            margin: 0 0 12px 0 !important; 
+            color: #2c3e50; 
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+        .status-text { margin-left: 28px; }
 
-        /* Moderate Colors */
-        .stMultiSelect [title*="Moderate"] [aria-selected="true"] {
+        /* Multiselect Color Coding */
+        [title*="Low"] [aria-selected="true"] { /* Green */
+            background-color: #28a745 !important;
+            color: white !important;
+        }
+        [title*="Moderate"] [aria-selected="true"] { /* Light Green */
             background-color: #90EE90 !important;
             color: #2c3e50 !important;
         }
-
-        /* High Colors */
-        .stMultiSelect [title*="High"] [aria-selected="true"] {
+        [title*="High"] [aria-selected="true"] { /* Orange */
             background-color: #FFA500 !important;
             color: white !important;
         }
-
-        /* Critical Colors */
-        .stMultiSelect [title*="Critical"] [aria-selected="true"] {
+        [title*="Critical"] [aria-selected="true"] { /* Red */
             background-color: #dc3545 !important;
             color: white !important;
         }
-
-        /* Checkbox and hover states */
         .stMultiSelect div[role="option"]:hover {
             background-color: #f8f9fa !important;
         }
-        
-        /* Border and focus states */
         .stMultiSelect:focus-within {
             box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.25) !important;
-        }
-        
-        .st-bd {
-            border-color: #dee2e6 !important;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -325,11 +340,10 @@ if monitoring:
     </div>
     """, unsafe_allow_html=True)
     
-    # Fixed refresh mechanism
+    # Refresh mechanism
     time.sleep(5)
     st.rerun()
 
-# Add this to handle first run when monitoring is off
 else:
     data_placeholder.empty()
     action_placeholder.empty()
