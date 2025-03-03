@@ -320,7 +320,7 @@ if monitoring:
     </div>
     """, unsafe_allow_html=True)
 
-    # Display Notifications
+        # Display Notifications
     notification_placeholder.markdown(f"""
     <div class='dashboard-container'>
         <div class='dashboard-box notification-box'>
@@ -346,3 +346,8 @@ if monitoring:
                         {', '.join(notifs) if notifs else 'Normal condition'}
                     </div>
                 </div>"""
+                for category, notifs in notifications.items()
+            ])}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
