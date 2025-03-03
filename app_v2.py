@@ -214,7 +214,7 @@ if monitoring:
                 st.markdown(f"""
                 <div class='dashboard-box'>
                     <h3 style='margin:0; color: #2c3e50;'>⚕️ Health Crisis Risk</h3>
-                    <div style='display: flex; align-items: center; justify-content: space-between;'>
+                    <div style='display: flex; align-items: center; gap: 15px;'>
                         <div style='font-size: 32px; color: {risk_color};'>⚠️</div>
                         <div style='font-size: 24px; font-weight: bold; color: {risk_color};'>
                             {fake_data['Health Crisis Risk']}
