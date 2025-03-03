@@ -225,7 +225,7 @@ if monitoring:
                 </div>
                 """, unsafe_allow_html=True)
                 
-            with col8:
+            with col18:
                 risk_color = {"Low": "#2ecc71", "Moderate": "#f1c40f", "High": "#e67e22", "Critical": "#e74c3c"}[fake_data['Health Crisis Risk']]
                 st.markdown(f"""
                 <div class='dashboard-box'>
