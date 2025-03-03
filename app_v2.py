@@ -210,6 +210,22 @@ if monitoring:
                 """, unsafe_allow_html=True)
                 
             with col7:
+                fatigue_color = {"Low": "#2ecc71", "Moderate": "#f1c40f", "High": "#e67e22", "Critical": "#e74c3c"}[fake_data['Fatigue Risk']]
+                st.markdown(f"""
+                <div class='dashboard-box'>
+                    <h3 style='margin:0; color: #2c3e50;'>🧠 Fatigue Risk</h3>
+                    <div style='display: flex; align-items: center; gap: 15px;'>
+                        <div style='font-size: 32px; color: {fatigue_color};'>""" +
+                        {"Low": "😊", "Moderate": "😐", "High": "😣", "Critical": "😡"}[fake_data['Fatigue Risk']] +
+                        f"""</div>
+                        <div style='font-size: 24px; font-weight: bold; color: {fatigue_color};'>
+                            {fake_data['Fatigue Risk']}
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+            with col8:
                 risk_color = {"Low": "#2ecc71", "Moderate": "#f1c40f", "High": "#e67e22", "Critical": "#e74c3c"}[fake_data['Health Crisis Risk']]
                 st.markdown(f"""
                 <div class='dashboard-box'>
