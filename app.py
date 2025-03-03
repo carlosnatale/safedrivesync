@@ -84,7 +84,7 @@ def generate_fake_data():
         'SpO2 (%)': np.random.randint(90, 100),
         'Blood Pressure (mmHg)': f"{np.random.randint(90, 140)}/{np.random.randint(60, 90)}",
         'Blood Sugar (mg/dL)': np.random.randint(70, 140),
-        'Body Temperature': np.random.randint(0, 10),
+        'Body Temperature': np.random.randint(35.5, 40),
         'Stress Level': np.random.choice(levels),
         'Fatigue Risk': np.random.choice(levels, p=[0.5, 0.3, 0.15, 0.05]),
         'Health Crisis Risk': np.random.choice(levels, p=health_crisis_probs)
@@ -187,7 +187,7 @@ if monitoring:
                     <div style='display: flex; align-items: center; gap: 15px;'>
                         <div style='font-size: 42px; font-weight: bold; color: #e74c3c;'>{fake_data['Body Temperature']}</div>
                         <div style='width: 100%; background: #eee; height: 10px; border-radius: 5px;'>
-                            <div style='width: {fake_data['Body Temperature']*10}%; background: #e74c3c; height: 10px; border-radius: 5px;'></div>
+                            <div style='width: {fake_data['Body Temperature']*2}%; background: #e74c3c; height: 10px; border-radius: 5px;'></div>
                         </div>
                     </div>
                 </div>
@@ -214,7 +214,7 @@ if monitoring:
                 st.markdown(f"""
                 <div class='dashboard-box'>
                     <h3 style='margin:0; color: #2c3e50;'>⚕️ Health Crisis Risk</h3>
-                    <div style='display: flex; align-items: center; justify-content: space-between;'>
+                    <div style='display: flex; align-items: center; gap: 15px;'>
                         <div style='font-size: 32px; color: {risk_color};'>⚠️</div>
                         <div style='font-size: 24px; font-weight: bold; color: {risk_color};'>
                             {fake_data['Health Crisis Risk']}
