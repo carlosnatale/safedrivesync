@@ -187,7 +187,7 @@ if monitoring:
                     <div style='display: flex; align-items: center; gap: 15px;'>
                         <div style='font-size: 42px; font-weight: bold; color: #e74c3c;'>{fake_data['Body Temperature']}</div>
                         <div style='width: 100%; background: #eee; height: 10px; border-radius: 5px;'>
-                            <div style='width: {fake_data['Body Temperature']}%; background: #e74c3c; height: 10px; border-radius: 5px;'></div>
+                            <div style='width: {fake_data['Body Temperature']*2}%; background: #e74c3c; height: 10px; border-radius: 5px;'></div>
                         </div>
                     </div>
                 </div>
